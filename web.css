@@ -1,0 +1,14 @@
+:root {
+    --female_faded: #99d2dc;
+    --female: #619ba5; 
+    --male: #f5d6b0;
+    --male_faded: #f9e9d9;
+    --font_lines: #000000;
+  }
+  
+
+body {
+    font-family: Avenir Next, sans-serif;
+    --main-color: var( --font_lines);
+    font-weight: 100;
+}

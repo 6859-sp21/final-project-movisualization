@@ -1,10 +1,10 @@
 <html>
   <head>
+    <link rel="stylesheet" href="web.css">
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v6.js"></script>
   </head>
   <body>
-    <h1>6.859: D3 basics pt2</h1>
 
     <div id="chart" style="width:420px;height:420px;">
       <!-- This is where we will put our chart. -->
@@ -12,15 +12,45 @@
 
     <script>
       // 1. Data - plotting a couple of points along the y=x line
-      d3.csv("data_cleaned_merged/line_percents_by_gender.csv").then((allData) => {
-        data=[{position: 1,male_lines: 50,female_lines:80}, {position: 2, male_lines: 20,female_lines:70}]
+      d3.csv("data_cleaned_merged/line_percents_by_character.csv").then((allData) => {
+
+        data_know_gender = allData.filter(d => { 
+          
+        if ((d.Gender === 'm' || d.Gender === 'f') && parseInt(d.Position_in_Credits) <= 10){
+          return d}
+        })
+        data = []
+        count = []
+        for(let i =1; i<=10;i++){
+          let temp_count = {male_count:0, female_count:0, male_sum:0, female_sum:0}
+          let temp = {position:i, male_lines_avg:0, female_lines_avg:0}
+          data.push(temp)
+          count.push(temp_count)
+        }
+        data_know_gender.forEach(function(d, index) {
+          if(d.Gender === 'm'){
+            count[parseInt(d.Position_in_Credits)-1].male_count++
+            count[parseInt(d.Position_in_Credits)-1].male_sum += parseFloat(d.Character_Line_Percent)
+          }
+          if(d.Gender === 'f'){
+            count[parseInt(d.Position_in_Credits)-1].female_count++
+            count[parseInt(d.Position_in_Credits)-1].female_sum += parseFloat(d.Character_Line_Percent)
+          }
+        })
+        console.log(count);
+        for(let i = 0; i < 10; i++){
+          data[i].male_lines_avg = (count[i].male_sum/count[i].male_count)*100
+          data[i].female_lines_avg = (count[i].female_sum/count[i].female_count)*100
+        }
+        console.log(data)
+        //data=[{position: 1,male_lines: 50,female_lines:80}, {position: 2, male_lines: 20,female_lines:70}]
         // 2. Setting up variables that describe our chart's space.
         const height = 400;
         const width = 500;;
         const margin = ({top: 10, right: 10, bottom: 20, left: 30});
         var color = d3.scaleOrdinal()
         .domain(['m','f'])
-        .range(['#e41a1c','#377eb8'])
+        .range(['#f5d6b0','#619ba5'])
         // 3. Create a SVG we will use to make our chart.
         // See https://developer.mozilla.org/en-US/docs/Web/SVG for more on SVGs.
         const svg = d3.create('svg')
@@ -29,7 +59,7 @@
 
         // 4. Setting up scales.
         const xScale = d3.scaleBand()
-          .domain([1,2,3,4,5])
+          .domain([1,2,3,4,5,6,7,8,9,10])
           .range([margin.left, width - margin.right])
           .padding([0.2])
          // .nice();
@@ -69,8 +99,8 @@
           .attr("transform", function(d) { return "translate(" + xScale(d.position) + ",0)"; })
           .selectAll("rect")
           .data(function(d) {
-            a = [{key: 'm', value: d.male_lines}, {key:'f', value:d.female_lines}]
-            console.log(a)
+            a = [{key: 'm', value: d.male_lines_avg}, {key:'f', value:d.female_lines_avg}]
+            //console.log(a)
              return a})
            .enter().append("rect")
             .attr("x", function(d) { return xSubgroup(d.key); })

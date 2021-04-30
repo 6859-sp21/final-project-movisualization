@@ -1,4 +1,4 @@
-,Character ID,Movie ID,Title,Gender,Position in Credits,Character,Character_Line_Count,Movie_Line_Count,Character_Line_Percent
+,Character ID,Movie ID,Title,Gender,Position_in_Credits,Character,Character_Line_Count,Movie_Line_Count,Character_Line_Percent
 0,u0,m0,10 things i hate about you,f,4,BIANCA,98,668,0.1467065868263473
 1,u1,m0,10 things i hate about you,?,?,BRUCE,3,668,0.004491017964071856
 2,u10,m0,10 things i hate about you,?,?,SHARON,9,668,0.01347305389221557
