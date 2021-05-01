@@ -2,13 +2,21 @@
   <head>
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v6.js"></script>
-  </head>
-  <body>
     <h1>Movisualization Graph 1</h1>
-
+  </head>
+ 
+  <body>
+    <div id="tabs">
+      <button class="tablinks" id ="adventure">Adventure</button>
+      <button class="tablinks" id ="action">Action</button>
+      <button class="tablinks" id ="drama">Drama</button>
+      <button class="tablinks" id ="comedy">Comedy</button>
+      <button class="tablinks" id ="romance">Romance</button>
+      <button class="tablinks" id ="all">All Genres</button>
+    </div>
     <!-- <div id="chart" style="width:420px;height:420px;"> -->
       <!-- This is where we will put our chart. -->
-    </div>
+    <!-- </div> -->
 
     <style>
     .enter {
@@ -44,7 +52,40 @@
     </style>
 
     <script>
-      d3.csv("data_cleaned_merged/line_percents_by_gender.csv").then((data) => {
+      d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movie_data) =>{d3.csv("data_cleaned_merged/line_percents_by_gender.csv").then((data) => {
+        movie_dictionnary = new Map()
+        movie_data.forEach(function(d){
+          genres = d.genres.slice(1, -1)
+          genres = new Set(genres.split("'"))
+          movie_dictionnary.set(d.title,genres)
+        })
+        const all_data = data
+        //genre tabbing 
+        document.getElementById("action").onclick = function(){selectGenre("action")};
+        document.getElementById("adventure").onclick = function(){selectGenre("adventure")};
+        document.getElementById("drama").onclick = function(){selectGenre("drama")};
+        document.getElementById("comedy").onclick = function(){selectGenre("comedy")};
+        document.getElementById("romance").onclick = function(){selectGenre("romance")};
+        document.getElementById("all").onclick = function(){selectGenre("all")};
+        function selectGenre(g){
+          if(g == "all"){
+            data = all_data
+          }else{
+          data = all_data.filter(d=>{
+            if(movie_dictionnary.has(d.Title)){
+              if(movie_dictionnary.get(d.Title).has(g)){
+                return d;
+              }
+            }else{
+              console.log("error: movie not in genre dictionnary:  " + d.Title);
+            
+            }
+          })}
+          update();
+          console.log(g)
+          console.log(data)
+        }
+
         data.forEach(function(d) {
             d.Name = d.Title
             d.Male_Percent = +d.Male_Percent
@@ -65,7 +106,7 @@
                   `translate(${margin.left}, ${margin.top})`);
         // Setup scales
         const x = d3.scaleLinear()
-          .domain([0, 1.0])
+          .domain([0.0, 100.0])
           .range([margin.left, width - margin.right])
           .nice();
 
@@ -85,7 +126,7 @@
           const histogram = d3.histogram()
             .domain(x.domain())
             .thresholds(x.ticks(nbins))
-            .value(function(d) { return d.Female_Percent;} )
+            .value(function(d) { return (d.Female_Percent)*100;} )
 
           //binning data and filtering out empty bins
           const bins = histogram(data).filter(d => d.length>0)
@@ -105,7 +146,8 @@
               .data(d => d.map((p, i) => {
                 return {idx: i,
                         name: p.Title,
-                        value: p.Male_Percent,
+                        value_f: (p.Female_Percent)*100,
+                        value: (p.Male_Percent)*100,
                         radius: (x(d.x1)-x(d.x0))/2
                       }
               }))
@@ -130,7 +172,8 @@
               .data(d => d.map((p, i) => {
                 return {idx: i,
                         name: p.Title,
-                        value: p.Male_Percent,
+                        value_f: (p.Female_Percent)*100,
+                        value: (p.Male_Percent)*100,
                         radius: (x(d.x1)-x(d.x0))/2
                       }
               }))
@@ -138,7 +181,8 @@
           // //EXIT old elements not present in data
           dots.exit()
               .attr("class", "exit")
-            .transition(t)
+            .transition()
+            .duration(1000)
               .attr("r", 0)
               .remove();
 
@@ -176,7 +220,7 @@
           tooltip.transition()
               .duration(200)
               .style("opacity", .9);
-          tooltip.html(d.target.__data__.name + "<br/> (" + d.target.__data__.value + ")")
+          tooltip.html(d.target.__data__.name + "<br/> Male Lines: " + d.target.__data__.value + "<br/> Female Lines:" + d.target.__data__.value_f)
             .style("left", gX + "px")
             .style("top", gY + "px");
         }//tooltipOn
@@ -197,12 +241,13 @@
         update();
 
       // update with new data every 3sec
-      d3.interval(function() {
-        update();
-      }, 3000);
+      // d3.interval(function() {
+      //   update();
+      // }, 3000);
 
         // document.getElementById("chart").appendChild(svg.node());
     });
+  });
     </script>
   </body>
 
