@@ -6,7 +6,7 @@
   </head>
  
   <body>
-    <button name= "play-button" class="play-button" id="play-button">Pause</button>
+    <button name= "play-button" class="play-button" id="play-button">Play</button>
     <output for="slider" id="year" >1935</output> 
         
     <input type="range" name="slider" id="slider" min="1935" max="2010" value="1935" style="width: 1000px;" step="5" class="slider"/>
@@ -43,7 +43,7 @@
 
     <script>
       d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movie_data) =>{d3.csv("data_cleaned_merged/line_percents_by_gender.csv").then((gender_data) => {
-        var sliderInterval = setInterval(increaseSlider, 1000);
+        //var sliderInterval = setInterval(increaseSlider, 1000);
         var currYear = document.getElementById('slider').value
         function increaseSlider(){
           currentVal =  document.getElementById('slider').value
@@ -67,7 +67,7 @@
         })
 
         var pauseButton = document.getElementById('play-button');
-        var playing = true;
+        var playing = false;
         function playSlider(){
           playing = true;
           pauseButton.innerHTML = 'Pause';

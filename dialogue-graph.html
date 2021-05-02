@@ -15,14 +15,16 @@
           <button class="tablinks" id ="romance">Romance</button>
           <button class="tablinks" id ="all">All Genres</button>
         </div>
+        <div class="loader" id="loader1" style="margin-top: 120;"></div> 
     </div>
+    
     <!-- <div id="chart" style="width:420px;height:420px;"> -->
       <!-- This is where we will put our chart. -->
     <!-- </div> -->
     <div style = "float: right;">
       <h2>Gender Distribution in Top 8 Credit's Positions</h1>
       <p>In movies, the higher the credit's position of an actor the higher the pay is (1 being high - 8 being low)</p>
-  
+      <div class="loader" id="loader2" style="margin-top: 120;"></div> 
       <div id="chart2" style="width:420px;height:420px;">
         <!-- This is where we will put our chart. -->
       </div>
@@ -48,9 +50,28 @@ div.tooltip {
     .selected {
       fill: #E6B0F1;
     }
+    .loader {
+  border: 30px solid grey;
+    border-top: 30px solid black;
+    border-radius: 50%;
+    width: 150;
+    height: 150;
+    animation: spin 2s linear infinite;
+    margin-left: 150;
+    
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
     </style>
 
     <script> 
+    function doneLoading() {
+        document.getElementById("loader1").style.display = "none";
+        document.getElementById("loader2").style.display = "none";
+     };
+
       d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movie_data) =>{d3.csv("data_cleaned_merged/line_percents_by_gender.csv").then((data) => { d3.csv("data_cleaned_merged/movie_lines_with_all_metadata.csv").then((data_position) => {
         movie_dictionnary = new Map()
         movie_data.forEach(function(d){
@@ -281,6 +302,7 @@ div.tooltip {
 
         update();
         updatePosition();
+        doneLoading();
 
       // update with new data every 3sec
       // d3.interval(function() {
