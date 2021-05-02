@@ -1,0 +1,126 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="web.css">
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v6.js"></script>
+  </head>
+  <body>
+    <h2>Gender Distribution in Top 8 Credit's Positions</h1>
+    <p>In movies, the higher the credit's position of an actor the higher the pay is (1 being high - 8 being low)</p>
+
+    <div id="chart" style="width:420px;height:420px;">
+      <!-- This is where we will put our chart. -->
+    </div>
+
+    <script>
+      d3.csv("data_cleaned_merged/movie_lines_with_all_metadata.csv").then((allData) => {
+        //format data for positions graph 
+        // array of 2 arrays of objects: {position: # (1-8), gender: 'f'/'m', percentage: #(female/male percentage at position #), start: (where bar should start), end: (where bar should end), total: #(people at position #)}
+        // first array is of females, second is of males
+        data = [[],[]]
+        for(let i = 0; i<8; i++){
+            data[0].push({
+                position: i+1, 
+                gender: 'f',
+                percentage: 0, 
+                start: -0.5,
+                end: 0,
+                total: 0
+            });
+            data[1].push({
+                position: i+1, 
+                gender: 'm',
+                percentage: 0, 
+                start: 0,
+                end: 0.5,
+                total: 0
+            });
+        }
+
+        // filter out all data that isn't top 8 and get totals for female, male, and overall
+        allData = allData.filter(d => {
+            let pos = d["Position in Credits"];
+            if(pos<9){
+                if(d["Gender"] == 'f'){
+                    data[0][pos-1].percentage += 1;
+                }else{
+                    data[1][pos-1].percentage += 1;
+                }
+                data[0][pos-1].total += 1;
+                data[1][pos-1].total += 1;
+                return d;
+            }
+        });
+        
+        // get percentage and set start (left) and end (right) of bars
+        data[0] = data[0].map(d => {
+            d.percentage /= d.total;
+            d.end = -0.5+d.percentage;
+            return d;
+        })
+        data[1] = data[1].map(d => {
+            d.percentage /= d.total;
+            d.start = 0.5-d.percentage;
+            return d;
+        })
+        
+        // Setting up variables that describe our chart's space.
+        const height = 400;
+        const width = 500;;
+        const margin = ({top: 20, right: 10, bottom: 20, left: 30});
+        const color = d3.scaleOrdinal()
+        .domain(['m','f'])
+        .range(['#f5d6b0','#619ba5'])
+
+        // Create a SVG we will use to make our chart.
+        const svg = d3.create('svg')
+          .attr('width', width)
+          .attr('height', height);
+
+        // Setting up scales for xAxis and yAxis
+        const x = d3.scaleLinear()
+          .domain([-0.5, 0.5])
+          .range([margin.left, width - margin.right]);
+
+        const y = d3.scaleBand()
+          .domain([1, 2, 3, 4, 5, 6, 7, 8])
+          .range([margin.top, height - margin.bottom])
+          .padding([0.2]);
+       
+        // bars 
+        svg.append('g')
+        .selectAll("g")
+            .data(data)
+            .join("g")
+            .attr("fill", d => color(d[0].gender))
+            .selectAll("rect")
+            .data(d => d.map(v => Object.assign(v, {key: d.position})))
+            .join("rect")
+            .attr("x", d => x(d.start))
+            .attr("y", d => y(d.position))
+            .attr("width", d => x(d.end) - x(d.start))
+            .attr("height", y.bandwidth())
+
+         
+        //Drawing our x-axis
+        xAxis = svg.append('g')
+        .attr('transform', `translate(0, ${margin.top})`)
+        .call(d3.axisTop(x).tickSize(0).tickFormat(d => {
+            if(d*100 == 0){
+                return "50%" // `${d*100}%`
+            }}))
+
+
+        // Drawing our y-axis
+        yAxis = svg.append('g')
+          .attr('transform', `translate(${x(0)}, 0)`)
+          .call(d3.axisLeft(y))
+          .call(g => g.selectAll(".tick")
+          .data(data[0])
+          .attr('transform', d => `translate(${x(-1.08)},${y(d.position) + y.bandwidth() / 2})`))
+
+        document.getElementById("chart").appendChild(svg.node());
+    });
+    </script>
+  </body>
+</html>
