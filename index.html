@@ -4,9 +4,9 @@
     <h1> Reading between the lines... </h1>
     <p>Looking into the gender roles in a random sample of 617 movies blah blah</p>
 
-    <div id="tabs" style="margin: auto; width:60%">
+    <div id="tabs" style="margin: auto; width:80%">
       <button class="bigtab" id ="lines" onclick="showLines(this)">Lines</button>
-      <button class="bigtab" id ="credits">Credits position</button>
+      <button class="bigtab" id ="credits" onclick="showCredits()">Credits position</button>
       <button class="bigtab" id ="year" onclick="showYear()">Year</button>
       <button class="bigtab" id ="movie-name">Movie</button>
     </div>
@@ -17,8 +17,7 @@
     <div id = "year-graph">
     <iframe src="dialogue-year-graph.html" height="600" width="1030"style="border:none;" ></iframe>
   </div>
-    <!-- <h2> Average gender lines per position</h2> -->
-    <!-- <iframe id="credits-graph" src="dialogue-position-graph.html" height="600" width="1000"style="border:none;" ></iframe> -->
+    <iframe id="credits-graph" src="positions-graph.html" height="700" width="1000"style="border:none;" ></iframe>
     <div id = "movie-graph">
     <iframe src="conversation-graph.html" height="800" width="800"style="border:none;" ></iframe>
   </div>
@@ -48,7 +47,7 @@ h1{
   }
   function showCredits(){
     hideAll();
-    //document.getElementById("credits").classList.toggle("active");
+    document.getElementById("credits").classList.toggle("active");
     document.getElementById("credits-graph").style.display = "block"
   } 
   function showYear(){

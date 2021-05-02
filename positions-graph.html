@@ -4,9 +4,10 @@
     <link rel="stylesheet" href="web.css">
     <script src="https://d3js.org/d3.v6.js"></script>
   </head>
-    <div style="float:left">
+  <div style="float:left; width: 50%;">
       <body>
-        <h2> Distribution of female lines per movie </h2>
+        <h2>Gender Distribution in Top 8 Credit's Positions</h1>
+
         <div id="tabs" style="margin: auto;">
           <button class="tablinks" id ="adventure">Adventure</button>
           <button class="tablinks" id ="action">Action</button>
@@ -15,21 +16,26 @@
           <button class="tablinks" id ="romance">Romance</button>
           <button class="tablinks" id ="all">All Genres</button>
         </div>
-        <div class="loader" id="loader1" style="margin-top: 120;"></div> 
-    </div>
     
     <!-- <div id="chart" style="width:420px;height:420px;"> -->
       <!-- This is where we will put our chart. -->
     <!-- </div> -->
-    <div style = "float: right;">
-      <h2>Gender Distribution in Top 8 Credit's Positions</h1>
       <p>In movies, the higher the credit's position of an actor the higher the pay is (1 being high - 8 being low)</p>
-      <div class="loader" id="loader2" style="margin-top: 120;"></div> 
+      <div class="loader" id="loader1" style="margin-top: 120;"></div> 
+
       <div id="chart2" style="width:420px;height:420px;">
+
         <!-- This is where we will put our chart. -->
-      </div>
     </div>
 
+  </div>
+  <div style = "float: right; width: 50%; ">
+    <h2> Distribution of average lines per positions in credits</h2>
+    <div class="loader" id="loader2" style="margin-top: 120;"></div> 
+
+    <div id="chart" style="width:420px;height:420px;"></div>
+
+  </div>
     <style>
 
 @keyframes spin {
@@ -44,27 +50,14 @@
         document.getElementById("loader2").style.display = "none";
      };
 
-      d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movie_data) =>{d3.csv("data_cleaned_merged/line_percents_by_gender.csv").then((data) => { d3.csv("data_cleaned_merged/movie_lines_with_all_metadata.csv").then((data_position) => {
+      d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movie_data) =>{d3.csv("data_cleaned_merged/line_percents_by_character.csv").then((data_line) => { d3.csv("data_cleaned_merged/movie_lines_with_all_metadata.csv").then((data_position) => {
         movie_dictionnary = new Map()
         movie_data.forEach(function(d){
           genres = d.genres.slice(1, -1)
           genres = new Set(genres.split("'"))
           movie_dictionnary.set(d.title,genres)
         })
-        data.forEach(function(d){
-          if(movie_dictionnary.has(d.Title)){
-            let g = ""
-            movie_dictionnary.get(d.Title).forEach(function(m){
-              g+= m
-              if(m.length >= 2){
-                g+= ", "
-              }
-              
-            })
-            g = g.slice(0,-2)
-            d.genre =g
-          }
-        })
+
 
         data_position = data_position.filter(d=>{
             let pos = d["Position_in_Credits"];
@@ -72,9 +65,40 @@
             return d;
             }
         })
-
+        function filterDataLine(all_data){
+          data_know_gender = all_data.filter(d => { 
+          
+          if ((d.Gender === 'm' || d.Gender === 'f') && parseInt(d.Position_in_Credits) <= 10){
+            return d}
+          })
+          data_pos = []
+          count = []
+          for(let i =1; i<=10;i++){
+            let temp_count = {male_count:0, female_count:0, male_sum:0, female_sum:0}
+            let temp = {position:i, male_lines_avg:0, female_lines_avg:0}
+            data_pos.push(temp)
+            count.push(temp_count)
+          }
+          data_know_gender.forEach(function(d, index) {
+            if(d.Gender === 'm'){
+              count[parseInt(d.Position_in_Credits)-1].male_count++
+              count[parseInt(d.Position_in_Credits)-1].male_sum += parseFloat(d.Character_Line_Percent)
+            }
+            if(d.Gender === 'f'){
+              count[parseInt(d.Position_in_Credits)-1].female_count++
+              count[parseInt(d.Position_in_Credits)-1].female_sum += parseFloat(d.Character_Line_Percent)
+            }
+          })
+          for(let i = 0; i < 10; i++){
+            data_pos[i].male_lines_avg = (count[i].male_sum/count[i].male_count)*100
+            data_pos[i].female_lines_avg = (count[i].female_sum/count[i].female_count)*100
+          }
+          return data_pos
+        }
         let selectedData = data_position;
-        const all_data = data
+        const all_data_line = data_line
+        data_line = filterDataLine(all_data_line)
+        document.getElementById("all").classList.toggle("active");
         //genre tabbing 
         document.getElementById("action").onclick = function(){selectGenre("action")};
         document.getElementById("adventure").onclick = function(){selectGenre("adventure")};
@@ -83,20 +107,27 @@
         document.getElementById("romance").onclick = function(){selectGenre("romance")};
         document.getElementById("all").onclick = function(){selectGenre("all")};
         function selectGenre(g){
+          document.getElementById("action").classList.remove("active");
+          document.getElementById("adventure").classList.remove("active");
+          document.getElementById("drama").classList.remove("active");
+          document.getElementById("comedy").classList.remove("active");
+          document.getElementById("romance").classList.remove("active");
+          document.getElementById("all").classList.remove("active");
+          document.getElementById(g).classList.toggle("active");
             if(g == "all"){
-                data = all_data
                 selectedData = data_position
+                data_line=all_data_line
             }else{
-                data = all_data.filter(d=>{
-                    if(movie_dictionnary.has(d.Title)){
-                    if(movie_dictionnary.get(d.Title).has(g)){
-                        return d;
-                    }
-                    }else{
-                    console.log("error: movie not in genre dictionnary:  " + d.Title);
-                    
-                    }
-                })
+              data_line = all_data_line.filter(d=>{
+            if(movie_dictionnary.has(d.Title)){
+              if(movie_dictionnary.get(d.Title).has(g)){
+                return d;
+              }
+            }else{
+              console.log("error: movie not in genre dictionnary:  " + d.Title);
+            
+            }
+          })
                 selectedData = data_position.filter(d=> {
                     let genres = d["Genres"].slice(1, -1);
                     genres = genres.split("'");
@@ -106,174 +137,14 @@
                     }
                 })
             }
-          update();
+          // update();
+          data_line = filterDataLine(data_line)
+          updateDataLine();
           updatePosition();
         }
 
      
-        
-        // SVG setup
-        const margin = {top: 10, right: 10, bottom: 30, left: 30},
-        width = 1000 - margin.left - margin.right,
-        height = 300 - margin.top - margin.bottom;
 
-        const svg = d3.select("body")
-        .append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-          .attr("transform",
-                  `translate(${margin.left}, ${margin.top})`);
-        // Setup scales
-        const x = d3.scaleLinear()
-          .domain([0.0, 100.0])
-          .range([margin.left, width - margin.right])
-          .nice();
-
-        const nbins = 100;
-        const tooltip = d3.select("body")
-          .append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0.9);
-
-        const t = d3.transition()
-              .duration(1000);
-         
-        // }
-        var color = d3.scaleLinear().domain([1,100]).range(["#f5d6b0", "#619ba5"])
-        // Function for graph
-        function update(){
-          //histogram binning
-          const histogram = d3.histogram()
-            .domain(x.domain())
-            .thresholds(x.ticks(nbins))
-            .value(function(d) { return (d.Female_Percent)*100;} )
-
-          //binning data and filtering out empty bins
-          const bins = histogram(data).filter(d => d.length>0)
-
-          //g container for each bin
-          let binContainer = svg.selectAll(".gBin")
-            .data(bins);
-          binContainer.exit().remove()
-
-          let binContainerEnter = binContainer.enter()
-            .append("g")
-              .attr("class", "gBin")
-              .attr("transform", d => `translate(${x(d.x0)}, ${height})`)
-
-          //need to populate the bin containers with data the first time
-          binContainerEnter.selectAll("circle")
-              .data(d => d.map((p, i) => {
-                return {idx: i,
-                        name: p.Title,
-                        value_f: parseInt((p.Female_Percent)*100),
-                        value: parseInt((p.Male_Percent)*100),
-                        radius: (x(d.x1)-x(d.x0))/2,
-                        genre: p.genre
-                      }
-              }))
-            .enter()
-            .append("circle")
-            .attr("fill", function(d){
-                return color(d.value_f)
-              })
-              .attr("class", "enter")
-              .attr("cx", 0) //g element already at correct x pos
-              .attr("cy", function(d) {
-                  return - d.idx * 2 * d.radius - d.radius; })
-              .attr("r", 0)
-              .on("click", function(d){
-                localStorage["movie"] = d.target.__data__.name
-              })
-              .on("mouseover", tooltipOn)
-              .on("mouseout", tooltipOff)
-              .transition()
-                .duration(500)
-                .attr("r", function(d) {
-                return (d.length==0) ? 0 : d.radius; })
-          
-          binContainerEnter.merge(binContainer)
-              .attr("transform", d => `translate(${x(d.x0)}, ${height})`)
-          //enter/update/exit for circles, inside each container
-          let dots = binContainer.selectAll("circle")
-              .data(d => d.map((p, i) => {
-                return {idx: i,
-                        name: p.Title,
-                        value_f: parseInt((p.Female_Percent)*100),
-                        value: parseInt((p.Male_Percent)*100),
-                        radius: (x(d.x1)-x(d.x0))/2,
-                        genre: p.genre
-                      }
-              }))
-          
-          // //EXIT old elements not present in data
-          dots.exit()
-              .attr("class", "exit")
-            .transition()
-            .duration(1000)
-              .attr("r", 0)
-              .remove();
-
-          //UPDATE old elements present in new data.
-          dots.attr("class", "update");
-
-          // ENTER new elements present in new data.
-          dots.enter()
-            .append("circle")
-              .attr("class", "enter")
-              .attr("fill", function(d){
-                return color(d.value_f)
-              })
-              .attr("cx", 0) //g element already at correct x pos
-              .attr("cy", function(d) {
-                return - d.idx * 2 * d.radius - d.radius; })
-              .attr("r", 0)
-            .merge(dots)
-            .on("click", function(d){
-                localStorage["movie"] = d.target.__data__.name
-              })
-              .on("mouseover", tooltipOn)
-              .on("mouseout", tooltipOff)
-              .transition()
-                .duration(500)
-                .attr("r", function(d) {
-                return (d.length==0) ? 0 : d.radius; })
-      // });
-      };
-
-        function tooltipOn(d) {
-          //x position of parent g element
-          let gParent = d3.select(this.parentElement)
-          let translateValue = gParent.attr("transform")
-
-          let gX = translateValue.split(",")[0].split("(")[1]
-          let gY = height + (+d3.select(this).attr("cy")-50)
-
-          d3.select(this)
-            .classed("selected", true)
-          tooltip.transition()
-              .duration(200)
-              .style("opacity", .9);
-          tooltip.html("<b>" + d.target.__data__.name + "</b><br/> Male Lines: " + d.target.__data__.value + "% <br/> Female Lines: " + d.target.__data__.value_f+"% <br/> Genres: " +d.target.__data__.genre)
-            .style("left", gX + "px")
-            .style("top", gY + "px");
-        }//tooltipOn
-
-        function tooltipOff(d) {
-          d3.select(this)
-              .classed("selected", false);
-            tooltip.transition()
-                .duration(500)
-                .style("opacity", 0);
-        }//tooltipOff
-
-        svg.append("g")
-        // .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
-
-        update();
         // format data for positions graph 
         // array of 2 arrays of objects: {position: # (1-8), gender: 'f'/'m', percentage: #(female/male percentage at position #), start: (where bar should start), end: (where bar should end), total: #(people at position #)}
         // first array is of females, second is of males
@@ -320,7 +191,11 @@
             d.start = 0.5-d.percentage;
             return d;
         })
-        
+        const tooltip = d3.select("body")
+          .append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
         // Setting up variables that describe our chart's space.
         const heightPos = 400;
         const widthPos = 500;;
@@ -399,6 +274,7 @@
           .attr('transform', d => `translate(${xScale(-1.08)},${y(d.position) + y.bandwidth() / 2})`))
 
         document.getElementById("chart2").appendChild(svgPos.node());
+        updateDataLine();
         doneLoading();
    
     
@@ -462,6 +338,106 @@
             .attr("width", d => xScale(d.end) - xScale(d.start))
             .attr("height", y.bandwidth())
       }
+      function updateDataLine(){
+          let oldChild = null
+        if(document.getElementById("chart") !== null){
+          oldChild = document.getElementById("chart").lastElementChild;
+        }
+          const height = 400;
+        const width = 500;
+        const margin = ({top: 10, right: 10, bottom: 20, left: 30});
+        var color = d3.scaleOrdinal()
+        .domain(['m','f'])
+        .range(['#f5d6b0','#619ba5'])
+        // 3. Create a SVG we will use to make our chart.
+        // See https://developer.mozilla.org/en-US/docs/Web/SVG for more on SVGs.
+        const svg = d3.create('svg')
+          .attr('width', width)
+          .attr('height', height);
+
+        // 4. Setting up scales.
+        const xScale = d3.scaleBand()
+          .domain([1,2,3,4,5,6,7,8,9,10])
+          .range([margin.left, width - margin.right])
+          .padding([0.2])
+         // .nice();
+
+         var xSubgroup = d3.scaleBand()
+            .domain(['m', 'f'])
+          .range([0, xScale.bandwidth()])
+          .padding([0.05])
+
+        const yScale = d3.scaleLinear()
+          .domain([0, 100])
+          .range([height - margin.bottom, margin.top])
+          .nice();
+       
+
+        svg.append('g')
+        .attr('transform', "translate(" + margin.left + "," + margin.top + ")")
+        
+         
+        //6. Drawing our x-axis
+        svg.append('g')
+        .attr('transform', `translate(0, ${height - margin.bottom})`)
+        .call(d3.axisBottom(xScale).tickSize(0))
+
+
+        // //7. Drawing our y-axis
+        svg.append('g')
+          .attr('transform', `translate(${margin.left}, 0)`)
+          .call(d3.axisLeft(yScale))
+        
+        var tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
+
+
+        svg.append("g")
+          .selectAll("g")
+          .data(data_line)
+          .enter()
+          .append("g")
+          .attr("transform", function(d) { return "translate(" + xScale(d.position) + ",0)"; })
+          .selectAll("rect")
+          .data(function(d) {
+            a = [{key: 'm', value: d.male_lines_avg}, {key:'f', value:d.female_lines_avg}]
+             return a})
+           .enter().append("rect")
+            .attr("x", function(d) { return xSubgroup(d.key); })
+            .attr("y", function(d) { return yScale(d.value); })
+             .attr("width", xSubgroup.bandwidth())
+            .attr("height", function(d) { return height - margin.bottom- yScale(d.value); })
+            .attr("fill", function(d) { return color(d.key); })
+            .on("mouseover", function(event, d){
+                tooltip.transition()
+                .duration(200)
+                .style("opacity", .9)
+                tooltip.html(function(){
+                  if(d.key === 'm'){
+                    return "Male lines: " + parseInt(d.value) +"%"
+                  }else{
+                    return "Female lines: " + parseInt(d.value)+"%"
+                  }
+                })
+                  .style("left", (event.pageX) + "px")
+                  .style("top", (event.pageY - 28) + "px");
+             })
+            .on("mouseout", function(event, d) {
+                tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+            })
+
+            if(oldChild === null){
+          document.getElementById("chart").appendChild(svg.node());
+        }else{
+          document.getElementById("chart").replaceChild(svg.node(), oldChild);
+        }
+        }
+    
+
+
 
     });
   });
