@@ -10,7 +10,7 @@
       <!-- This is where we will put our chart. -->
     </div>
 <style>
-   div.tooltip {
+  div.tooltip {
       color: black;
       position: absolute;
       text-align: left;
@@ -24,6 +24,8 @@
       border-radius: 8px;
       pointer-events: none;
     }
+
+
 </style>
     <script>
       // 1. Data - plotting a couple of points along the y=x line
@@ -135,7 +137,7 @@
                   if(d.key === 'm'){
                     return "Male lines: " + parseInt(d.value) +"%"
                   }else{
-                    return "Female lines" + parseInt(d.value)+"%"
+                    return "Female lines: " + parseInt(d.value)+"%"
                   }
                 })
                   .style("left", (event.pageX) + "px")

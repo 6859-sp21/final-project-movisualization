@@ -1,12 +1,12 @@
 <html>
   <head>
     <!-- Load d3.js -->
+    <link rel="stylesheet" href="web.css">
     <script src="https://d3js.org/d3.v6.js"></script>
-    <h1>Movisualization Graph 1</h1>
   </head>
  
   <body>
-    <div id="tabs">
+    <div id="tabs" style=" margin: auto; width:45%">
       <button class="tablinks" id ="adventure">Adventure</button>
       <button class="tablinks" id ="action">Action</button>
       <button class="tablinks" id ="drama">Drama</button>
@@ -21,11 +21,7 @@
     <style>
 
 
-    .selected {
-      fill: #E6B0F1;
-    }
-
-    div.tooltip {
+div.tooltip {
       color: black;
       position: absolute;
       text-align: left;
@@ -39,9 +35,12 @@
       border-radius: 8px;
       pointer-events: none;
     }
+    .selected {
+      fill: #E6B0F1;
+    }
     </style>
 
-    <script>
+    <script> 
       d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movie_data) =>{d3.csv("data_cleaned_merged/line_percents_by_gender.csv").then((data) => {
         movie_dictionnary = new Map()
         movie_data.forEach(function(d){
@@ -93,7 +92,7 @@
         // SVG setup
         const margin = {top: 10, right: 10, bottom: 30, left: 30},
         width = 1000 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        height = 300 - margin.top - margin.bottom;
 
         const svg = d3.select("body")
         .append("svg")
@@ -255,9 +254,9 @@
         // document.getElementById("chart").appendChild(svg.node());
     });
   });
-    </script>
-  </body>
+</script>
+</body>
 
-  <!-- This adapted from Arvind's observable from lecture. https://observablehq.com/d/4c93c3a516d35624 -->
-  <!-- Great D3 intro resource: https://observablehq.com/@d3/learn-d3?collection=@d3/learn-d3 -->
+<!-- This adapted from Arvind's observable from lecture. https://observablehq.com/d/4c93c3a516d35624 -->
+<!-- Great D3 intro resource: https://observablehq.com/@d3/learn-d3?collection=@d3/learn-d3 -->
 </html>

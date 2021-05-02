@@ -2,7 +2,7 @@
   <head>
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v6.js"></script>
-    <h1>Movisualization Graph 1</h1>
+    <link rel="stylesheet" href="web.css">
   </head>
  
   <body>
@@ -10,26 +10,20 @@
     <output for="slider" id="year" >1935</output> 
         
     <input type="range" name="slider" id="slider" min="1935" max="2010" value="1935" style="width: 1000px;" step="5" class="slider"/>
+    <span class="dot" style = "background-color:#619ba5;">  </span> Female
+    <span class="dot" style = "background-color:#f5d6b0;">  </span> Male
     <!-- <div id="chart" style="width:420px;height:420px;"> -->
       <!-- This is where we will put our chart. -->
     <!-- </div> -->
 
     <style>
-    .enter {
-      fill: #EDCA3A;
-    }
-
-    .update {
-      fill: #1FBAD6;
-    }
-
-    .exit {
-      fill: #F25754;
-    }
-
-    .selected {
-      fill: #E6B0F1;
-    }
+   .dot{
+    
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    display: inline-block;
+   }
 
     div.tooltip {
       color: black;
