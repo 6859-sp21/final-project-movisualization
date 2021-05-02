@@ -266,30 +266,39 @@ div.tooltip {
   });
     // positions graph
     d3.csv("data_cleaned_merged/movie_lines_with_all_metadata.csv").then((allData) => {
+      allData = allData.filter(d=>{
+        let pos = d["Position_in_Credits"];
+        if(pos<9){
+          return d;
+        }
+      })
+
+      let selectedData = allData;
       //genre tabbing 
       document.getElementById("action").onclick = function(){selectGenre("action")};
-        document.getElementById("adventure").onclick = function(){selectGenre("adventure")};
-        document.getElementById("drama").onclick = function(){selectGenre("drama")};
-        document.getElementById("comedy").onclick = function(){selectGenre("comedy")};
-        document.getElementById("romance").onclick = function(){selectGenre("romance")};
-        document.getElementById("all").onclick = function(){selectGenre("all")};
-        function selectGenre(g){
-          if(g == "all"){
-            allData = allData
-          }else{
-            allData = allData.filter(d=> {
-              let genres = d["Genres"].slice(1, -1);
-              genres = genres.split("'");
-              genres = genres.filter(genre => genre === g);
-              if(genres.length === 1){
-                return d;
-              }
-            })
-          }
-          update();
+      document.getElementById("adventure").onclick = function(){selectGenre("adventure")};
+      document.getElementById("drama").onclick = function(){selectGenre("drama")};
+      document.getElementById("comedy").onclick = function(){selectGenre("comedy")};
+      document.getElementById("romance").onclick = function(){selectGenre("romance")};
+      document.getElementById("all").onclick = function(){selectGenre("all")};
+      function selectGenre(g){
+        if(g == "all"){
+          selectedData = allData
+        }else{
+          selectedData = allData.filter(d=> {
+            let genres = d["Genres"].slice(1, -1);
+            genres = genres.split("'");
+            genres = genres.filter(genre => genre === g);
+            if(genres.length === 1){
+              return d;
+            }
+          })
         }
+        update();
+      }
 
       update();
+
       function update(){
         let oldChild = null
         if(document.getElementById("chart2") !== null){
@@ -319,18 +328,15 @@ div.tooltip {
         }
 
         // filter out all data that isn't top 8 and get totals for female, male, and overall
-        allData = allData.filter(d => {
-            let pos = d["Position_in_Credits"];
-            if(pos<9){
-                if(d["Gender"] == 'f'){
-                    data[0][pos-1].percentage += 1;
-                }else{
-                    data[1][pos-1].percentage += 1;
-                }
-                data[0][pos-1].total += 1;
-                data[1][pos-1].total += 1;
-                return d;
-            }
+        selectedData.forEach(d => {  
+          let pos = d["Position_in_Credits"];
+          if(d["Gender"] == 'f'){
+              data[0][pos-1].percentage += 1;
+          }else{
+              data[1][pos-1].percentage += 1;
+          }
+          data[0][pos-1].total += 1;
+          data[1][pos-1].total += 1;
         });
         
         // get percentage and set start (left) and end (right) of bars
