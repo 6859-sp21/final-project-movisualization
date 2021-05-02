@@ -39,7 +39,7 @@
 
         // filter out all data that isn't top 8 and get totals for female, male, and overall
         allData = allData.filter(d => {
-            let pos = d["Position in Credits"];
+            let pos = d["Position_in_Credits"];
             if(pos<9){
                 if(d["Gender"] == 'f'){
                     data[0][pos-1].percentage += 1;
