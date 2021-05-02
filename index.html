@@ -3,31 +3,73 @@
     <link rel="stylesheet" href="web.css">
     <h1> Reading between the lines... </h1>
     <p>Looking into the gender roles in a random sample of 617 movies blah blah</p>
-    <iframe id="dialogue-graph" src="dialogue-graph.html" height="550" width="1800"style="border:none; " ></iframe>
-    <p>blah blah blah</p>
-    <h2> Average yearly distribution of females lines and male lines</h2>
+
+    <div id="tabs" style="margin: auto; width:60%">
+      <button class="bigtab" id ="lines" onclick="showLines(this)">Lines</button>
+      <button class="bigtab" id ="credits">Credits position</button>
+      <button class="bigtab" id ="year" onclick="showYear()">Year</button>
+      <button class="bigtab" id ="movie-name">Movie</button>
+    </div>
+    <div id="line-graph">
+    <iframe src="dialogue-graph.html" height="550" width="1800"style="border:none; " ></iframe>
+    <p> blah blah</p>
+    </div>
+    <div id = "year-graph">
     <iframe src="dialogue-year-graph.html" height="600" width="1030"style="border:none;" ></iframe>
-    <h2> Average gender lines per position</h2>
-    <iframe src="dialogue-position-graph.html" height="600" width="1000"style="border:none;" ></iframe>
-    <iframe id="conversation-graph" src="conversation-graph.html" height="800" width="800"style="border:none;" ></iframe>
+  </div>
+    <!-- <h2> Average gender lines per position</h2> -->
+    <!-- <iframe id="credits-graph" src="dialogue-position-graph.html" height="600" width="1000"style="border:none;" ></iframe> -->
+    <div id = "movie-graph">
+    <iframe src="conversation-graph.html" height="800" width="800"style="border:none;" ></iframe>
+  </div>
+ 
 <style>
  
 h1{
   text-align:center;
   font-weight: normal;
 }
-h2{
-  font-weight: normal;
-  text-decoration: underline;
-}
    
 </style>
 <script>
-  window.addEventListener('storage', function(e) {  
-    var element = document.getElementById("conversation-graph");
-    element.scrollIntoView()
 
-          //update
-    });   
+  hideAll();
+  window.addEventListener('storage', function(e) {  
+    
+    showMovie();
+    document.getElementById("movie-name").classList.toggle("active");
+  });  
+
+
+  function showLines(b){
+    hideAll();
+    document.getElementById("lines").classList.toggle("active");
+    document.getElementById("line-graph").style.display = "block"
+  }
+  function showCredits(){
+    hideAll();
+    //document.getElementById("credits").classList.toggle("active");
+    document.getElementById("credits-graph").style.display = "block"
+  } 
+  function showYear(){
+    hideAll();
+    document.getElementById("year").classList.toggle("active");
+    document.getElementById("year-graph").style.display = "block"
+  } 
+  function showMovie(){
+    hideAll();
+    //document.getElementById("movie-name").style.backgoundColor = "#bdbcbc";
+    document.getElementById("movie-graph").style.display = "block"
+  } 
+  function hideAll(){
+    document.getElementById("line-graph").style.display = "none"
+    // document.getElementById("credits-graph").style.display = "none"
+    document.getElementById("year-graph").style.display = "none"
+    document.getElementById("movie-graph").style.display = "none"
+    document.getElementById("movie-name").classList.remove("active");
+    document.getElementById("year").classList.remove("active");
+    document.getElementById("credits").classList.remove("active");
+    document.getElementById("lines").classList.remove("active");
+  }
 </script>
 </html>
