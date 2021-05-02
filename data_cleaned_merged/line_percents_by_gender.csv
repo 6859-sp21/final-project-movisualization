@@ -1,4 +1,4 @@
-Movie ID,Title,Female_Lines,Male_Lines,Total_Lines,Female_Percent,Male_Percent
+Movie_ID,Title,Female_Lines,Male_Lines,Total_Lines,Female_Percent,Male_Percent
 m0,10 things i hate about you,277,359,636,0.43553459119496857,0.5644654088050315
 m10,affliction,104,441,545,0.1908256880733945,0.8091743119266055
 m100,innerspace,149,775,924,0.16125541125541126,0.8387445887445888
