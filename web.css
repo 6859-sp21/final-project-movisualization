@@ -12,3 +12,32 @@ body {
     --main-color: var( --font_lines);
     font-weight: 100;
 }
+
+div.tooltip {
+  color: black;
+  position: absolute;
+  text-align: left;
+  width: auto;
+  height: auto;
+  padding: 5px;
+  font-family: Avenir Next, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  background: #ffd4c4;
+  border: 1px solid #dd8c28;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.selected {
+  fill: #dd8c28;
+}
+.loader {
+border: 30px solid #f5d6b0;
+border-top: 30px solid #619ba5;
+border-radius: 50%;
+width: 150;
+height: 150;
+animation: spin 2s linear infinite;
+margin-left: 150;
+
+}
