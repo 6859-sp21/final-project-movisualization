@@ -1,0 +1,314 @@
+<html>
+  <head>
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <h1>Movisualization Graph 1</h1>
+  </head>
+ 
+  <body>
+    <button name= "play-button" class="play-button" id="play-button">Pause</button>
+    <output for="slider" id="year" >1935</output> 
+        
+    <input type="range" name="slider" id="slider" min="1935" max="2010" value="1935" style="width: 1000px;" step="5" class="slider"/>
+    <!-- <div id="chart" style="width:420px;height:420px;"> -->
+      <!-- This is where we will put our chart. -->
+    <!-- </div> -->
+
+    <style>
+    .enter {
+      fill: #EDCA3A;
+    }
+
+    .update {
+      fill: #1FBAD6;
+    }
+
+    .exit {
+      fill: #F25754;
+    }
+
+    .selected {
+      fill: #E6B0F1;
+    }
+
+    div.tooltip {
+      color: black;
+      position: absolute;
+      text-align: left;
+      width: auto;
+      height: auto;
+      padding: 5px;
+      font-family: Futura;
+      font: 12px sans-serif ;
+      background: #FCB8C3FF;
+      border: 0px;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+    </style>
+
+    <script>
+      d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movie_data) =>{d3.csv("data_cleaned_merged/line_percents_by_gender.csv").then((gender_data) => {
+        var sliderInterval = setInterval(increaseSlider, 1000);
+        var currYear = document.getElementById('slider').value
+        function increaseSlider(){
+          currentVal =  document.getElementById('slider').value
+          document.getElementById('slider').value = parseInt(currentVal)+5;
+          document.getElementById("year").value =  document.getElementById('slider').value;
+          t = update_year(parseInt(document.getElementById('slider').value))
+          data_m = t[0]
+          data_f = t[1]
+          console.log(t)
+          update(data_m, data_f)          
+        }
+        d3.select("#slider").on("input", function (d) {
+          selectedValue = this.value;
+          document.getElementById("year").value = selectedValue;
+          currYear = this.value;
+        })
+
+        var pauseButton = document.getElementById('play-button');
+        var playing = true;
+        function playSlider(){
+          playing = true;
+          pauseButton.innerHTML = 'Pause';
+          sliderInterval = setInterval(increaseSlider, 1000);
+        }
+
+        function pauseSlider(){
+          playing = false;
+          pauseButton.innerHTML = 'Play';
+          clearInterval(sliderInterval);
+        }
+        d3.select("#play-button").on("click", function(){
+	        if(playing){ pauseSlider(); }
+	          else{ playSlider(); }
+        })
+        //set margin, width height
+        const margin = {top: 10, right: 10, bottom: 30, left: 30},
+        width = 1000 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+        var parseTime = d3.timeParse("%Y");
+        
+        //parse data from into movie->year
+        movie_dictionnary = new Map()
+        movie_data.forEach(function(d){
+          let year = d.year
+          if(year.includes("/I")){
+            year =year.slice(0, -2)
+          }
+        
+         // if(parseInt(year) <= 2010){
+          movie_dictionnary.set(d.title,parseInt(year))
+         // }
+        })
+
+        //create data_f with year, avg female lines and data_m with year, avg male lines
+        year_count = new Map()
+        gender_data.forEach(function(d){
+          if(movie_dictionnary.has(d.Title)){
+            let year = movie_dictionnary.get(d.Title)
+            if(!year_count.has(year)){
+              year_count.set(year, {total_f: 0, total_m:0, count:0})
+              //console.log(year_count)
+            }
+            year_count.get(year)['count']+= 1
+            year_count.get(year)['total_m']+= parseFloat(d.Male_Percent)
+            year_count.get(year)['total_f']+= parseFloat(d.Female_Percent)
+           }else{
+              //console.log("error: movie not in genre dictionnary:  " + d.Title);
+            
+            }
+ 
+        })
+        data_m_unbinned = []
+        data_f_unbinned = []
+        year_count.forEach(function(v,k){
+          data_f_unbinned.push({year: parseInt(k), gender: 'f', value:  (v['total_f']/v['count'])*100})
+          data_m_unbinned.push({year: parseInt(k), gender: 'm', value:  (v['total_m']/v['count'])*100})
+        })
+       
+
+        //bin year by 5 by 5 
+        const xBin = d3.scaleLinear()
+          .domain([1931, 2010])
+          .range([margin.left, width - margin.right])
+          .nice();
+        var bin = d3.bin()
+          .value(d=>d.year)
+          .domain(xBin.domain())
+          .thresholds(xBin.ticks(15));
+        
+        data_m_unbinned = bin(data_m_unbinned)
+        data_f_unbinned = bin(data_f_unbinned)
+        data_m = []
+        data_m_unbinned.forEach(function(d){
+          let sum = 0
+          let count = 0
+          d.forEach(function(v){
+            sum+= v.value
+            count+=1
+          })
+          data_m.push({year: parseTime(parseInt(d.x0+ (d.x1-d.x0)/2)), value: sum/count})
+        })
+        data_f = []
+        data_f_unbinned.forEach(function(d){
+          let sum = 0
+          let count = 0
+          d.forEach(function(v){
+            sum+= v.value
+            count+=1
+          })
+          data_f.push({year: parseTime(parseInt(d.x0+ (d.x1-d.x0)/2)), value: sum/count})
+        })
+
+        const data_male = data_m
+        const data_female = data_f
+        
+        function update_year(year){
+          numPoints = ((year-1935)/5)+1
+          return [data_male.slice(0, numPoints), data_female.slice(0, numPoints)]
+        }
+        //create svg
+        const svg = d3.select("body")
+        .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform",
+                  `translate(${margin.left}, ${margin.top})`);
+
+        //setting x scale
+        const xScale = d3.scaleTime()
+          .domain([parseTime(1931), parseTime(2010)])
+          .range([margin.left, width - margin.right])
+          .nice();
+    
+    
+        //setting y scale
+        const yScale = d3.scaleLinear()
+          .domain([0, 100])
+          .range([height - margin.bottom, margin.top])
+          .nice();
+
+        //adding x and y axis
+        svg.append('g')
+          .attr('transform', `translate(${margin.left}, 0)`)
+          .call(d3.axisLeft(yScale))
+
+        svg.append('g')
+        .attr('transform', `translate(0, ${height - margin.bottom})`)
+        .call(d3.axisBottom(xScale).ticks(15))
+
+        //colors
+        var color_m = '#f5d6b0'
+        var color_f = '#619ba5'
+
+        function update(data_m, data_f){
+          console.log(data_m)
+          console.log(data_f)
+           // create line for male 
+        svg.append("path")
+          .datum(data_m)
+          .attr("fill", "none")
+          .attr("stroke", "#f5d6b0")
+          .attr("stroke-width", 1.5)
+          .attr("d", d3.line()
+            .x(function(d) { return xScale(d.year) })
+            .y(function(d) { return yScale(d.value) })
+          )
+        //create dot for male
+          svg
+          .append("g")
+          .selectAll("dot")
+          .data(data_m)
+          .enter()
+         .append("circle")
+            .attr("cx", function(d) { return xScale(d.year) } )
+            .attr("cy", function(d) { return yScale(d.value) } )
+            .attr("r", 5)
+            .attr("fill", "#f5d6b0")
+        
+        // create line for female
+        svg.append("path")
+          .datum(data_f)
+          .attr("fill", "none")
+          .attr("stroke", "#619ba5")
+          .attr("stroke-width", 1.5)
+          .attr("d", d3.line()
+            .x(function(d) { return xScale(d.year) })
+            .y(function(d) { return yScale(d.value) })
+          )
+        
+        //create dots for female
+        svg
+          .append("g")
+          .selectAll("dot")
+          .data(data_f)
+          .enter()
+         .append("circle")
+            .attr("cx", function(d) { return xScale(d.year) } )
+            .attr("cy", function(d) { return yScale(d.value) } )
+            .attr("r", 5)
+            .attr("fill", "#619ba5")
+        
+
+        }
+        t = update_year(1935)
+        data_m = t[0]
+        data_f = t[1]
+        // create line for male 
+        svg.append("path")
+          .datum(data_m)
+          .attr("fill", "none")
+          .attr("stroke", "#f5d6b0")
+          .attr("stroke-width", 1.5)
+          .attr("d", d3.line()
+            .x(function(d) { return xScale(d.year) })
+            .y(function(d) { return yScale(d.value) })
+          )
+        //create dot for male
+          svg
+          .append("g")
+          .selectAll("dot")
+          .data(data_m)
+          .enter()
+         .append("circle")
+            .attr("cx", function(d) { return xScale(d.year) } )
+            .attr("cy", function(d) { return yScale(d.value) } )
+            .attr("r", 5)
+            .attr("fill", "#f5d6b0")
+        
+        // create line for female
+        svg.append("path")
+          .datum(data_f)
+          .attr("fill", "none")
+          .attr("stroke", "#619ba5")
+          .attr("stroke-width", 1.5)
+          .attr("d", d3.line()
+            .x(function(d) { return xScale(d.year) })
+            .y(function(d) { return yScale(d.value) })
+          )
+        
+        //create dots for female
+        svg
+          .append("g")
+          .selectAll("dot")
+          .data(data_f)
+          .enter()
+         .append("circle")
+            .attr("cx", function(d) { return xScale(d.year) } )
+            .attr("cy", function(d) { return yScale(d.value) } )
+            .attr("r", 5)
+            .attr("fill", "#619ba5")
+        
+
+      });
+  });
+    </script>
+  </body>
+
+  <!-- This adapted from Arvind's observable from lecture. https://observablehq.com/d/4c93c3a516d35624 -->
+  <!-- Great D3 intro resource: https://observablehq.com/@d3/learn-d3?collection=@d3/learn-d3 -->
+</html>
