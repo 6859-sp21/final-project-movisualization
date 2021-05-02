@@ -9,7 +9,22 @@
     <div id="chart" style="width:420px;height:420px;">
       <!-- This is where we will put our chart. -->
     </div>
-
+<style>
+   div.tooltip {
+      color: black;
+      position: absolute;
+      text-align: left;
+      width: auto;
+      height: auto;
+      padding: 5px;
+      font-family: Futura;
+      font: 12px sans-serif ;
+      background: #FCB8C3FF;
+      border: 0px;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+</style>
     <script>
       // 1. Data - plotting a couple of points along the y=x line
       d3.csv("data_cleaned_merged/line_percents_by_character.csv").then((allData) => {
@@ -77,7 +92,7 @@
 
         svg.append('g')
         .attr('transform', "translate(" + margin.left + "," + margin.top + ")")
-
+        
          
         //6. Drawing our x-axis
         svg.append('g')
@@ -89,6 +104,10 @@
         svg.append('g')
           .attr('transform', `translate(${margin.left}, 0)`)
           .call(d3.axisLeft(yScale))
+        
+        var tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
 
 
         svg.append("g")
@@ -107,7 +126,26 @@
             .attr("y", function(d) { return yScale(d.value); })
              .attr("width", xSubgroup.bandwidth())
             .attr("height", function(d) { return height - margin.bottom- yScale(d.value); })
-            .attr("fill", function(d) { return color(d.key); });
+            .attr("fill", function(d) { return color(d.key); })
+            .on("mouseover", function(event, d){
+                tooltip.transition()
+                .duration(200)
+                .style("opacity", .9)
+                tooltip.html(function(){
+                  if(d.key === 'm'){
+                    return "Male lines: " + parseInt(d.value) +"%"
+                  }else{
+                    return "Female lines" + parseInt(d.value)+"%"
+                  }
+                })
+                  .style("left", (event.pageX) + "px")
+                  .style("top", (event.pageY - 28) + "px");
+             })
+            .on("mouseout", function(event, d) {
+                tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+            })
 
         document.getElementById("chart").appendChild(svg.node());
     });

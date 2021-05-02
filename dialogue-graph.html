@@ -19,17 +19,7 @@
     <!-- </div> -->
 
     <style>
-    .enter {
-      fill: #EDCA3A;
-    }
 
-    .update {
-      fill: #1FBAD6;
-    }
-
-    .exit {
-      fill: #F25754;
-    }
 
     .selected {
       fill: #E6B0F1;
@@ -59,6 +49,20 @@
           genres = new Set(genres.split("'"))
           movie_dictionnary.set(d.title,genres)
         })
+        data.forEach(function(d){
+          if(movie_dictionnary.has(d.Title)){
+            let g = ""
+            movie_dictionnary.get(d.Title).forEach(function(m){
+              g+= m
+              if(m.length >= 2){
+                g+= ", "
+              }
+              
+            })
+            g = g.slice(0,-2)
+            d.genre =g
+          }
+        })
         const all_data = data
         //genre tabbing 
         document.getElementById("action").onclick = function(){selectGenre("action")};
@@ -82,16 +86,10 @@
             }
           })}
           update();
-          console.log(g)
-          console.log(data)
         }
 
-        data.forEach(function(d) {
-            d.Name = d.Title
-            d.Male_Percent = +d.Male_Percent
-            d.Female_Percent = +d.Female_Percent;
-        });
-
+       
+        
         // SVG setup
         const margin = {top: 10, right: 10, bottom: 30, left: 30},
         width = 1000 - margin.left - margin.right,
@@ -118,8 +116,9 @@
 
         const t = d3.transition()
               .duration(1000);
-
-
+         
+        // }
+        var color = d3.scaleLinear().domain([1,100]).range(["#f5d6b0", "#619ba5"])
         // Function for graph
         function update(){
           //histogram binning
@@ -146,13 +145,17 @@
               .data(d => d.map((p, i) => {
                 return {idx: i,
                         name: p.Title,
-                        value_f: (p.Female_Percent)*100,
-                        value: (p.Male_Percent)*100,
-                        radius: (x(d.x1)-x(d.x0))/2
+                        value_f: parseInt((p.Female_Percent)*100),
+                        value: parseInt((p.Male_Percent)*100),
+                        radius: (x(d.x1)-x(d.x0))/2,
+                        genre: p.genre
                       }
               }))
             .enter()
             .append("circle")
+            .attr("fill", function(d){
+                return color(d.value_f)
+              })
               .attr("class", "enter")
               .attr("cx", 0) //g element already at correct x pos
               .attr("cy", function(d) {
@@ -172,9 +175,10 @@
               .data(d => d.map((p, i) => {
                 return {idx: i,
                         name: p.Title,
-                        value_f: (p.Female_Percent)*100,
-                        value: (p.Male_Percent)*100,
-                        radius: (x(d.x1)-x(d.x0))/2
+                        value_f: parseInt((p.Female_Percent)*100),
+                        value: parseInt((p.Male_Percent)*100),
+                        radius: (x(d.x1)-x(d.x0))/2,
+                        genre: p.genre
                       }
               }))
           
@@ -193,6 +197,9 @@
           dots.enter()
             .append("circle")
               .attr("class", "enter")
+              .attr("fill", function(d){
+                return color(d.value_f)
+              })
               .attr("cx", 0) //g element already at correct x pos
               .attr("cy", function(d) {
                 return - d.idx * 2 * d.radius - d.radius; })
@@ -220,7 +227,7 @@
           tooltip.transition()
               .duration(200)
               .style("opacity", .9);
-          tooltip.html(d.target.__data__.name + "<br/> Male Lines: " + d.target.__data__.value + "<br/> Female Lines:" + d.target.__data__.value_f)
+          tooltip.html(d.target.__data__.name + "<br/> Male Lines: " + d.target.__data__.value + "% <br/> Female Lines: " + d.target.__data__.value_f+"% <br/> Genres: " +d.target.__data__.genre)
             .style("left", gX + "px")
             .style("top", gY + "px");
         }//tooltipOn
