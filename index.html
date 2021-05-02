@@ -3,12 +3,13 @@
     <link rel="stylesheet" href="web.css">
     <h1> Reading between the lines... </h1>
     <p>Looking into the gender roles in a random sample of 617 movies blah blah</p>
-    <iframe src="dialogue-graph.html" height="350" width="1050"style="border:none; " ></iframe>
+    <iframe id="dialogue-graph" src="dialogue-graph.html" height="550" width="1800"style="border:none; " ></iframe>
     <p>blah blah blah</p>
     <h2> Average yearly distribution of females lines and male lines</h2>
     <iframe src="dialogue-year-graph.html" height="600" width="1030"style="border:none;" ></iframe>
     <h2> Average gender lines per position</h2>
-    <iframe src="dialogue-position-graph.html" height="600" width="600"style="border:none;" ></iframe>
+    <iframe src="dialogue-position-graph.html" height="600" width="1000"style="border:none;" ></iframe>
+    <iframe id="conversation-graph" src="conversation-graph.html" height="800" width="800"style="border:none;" ></iframe>
 <style>
  
 h1{
@@ -21,4 +22,12 @@ h2{
 }
    
 </style>
+<script>
+  window.addEventListener('storage', function(e) {  
+    var element = document.getElementById("conversation-graph");
+    element.scrollIntoView()
+
+          //update
+    });   
+</script>
 </html>

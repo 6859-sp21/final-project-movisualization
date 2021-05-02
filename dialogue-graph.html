@@ -7,7 +7,7 @@
     <div style="float:left">
       <body>
         <h2> Distribution of female lines per movie </h2>
-        <div id="tabs" style="margin: auto; width:45%;">
+        <div id="tabs" style="margin: auto;">
           <button class="tablinks" id ="adventure">Adventure</button>
           <button class="tablinks" id ="action">Action</button>
           <button class="tablinks" id ="drama">Drama</button>
@@ -51,7 +51,7 @@ div.tooltip {
     </style>
 
     <script> 
-      d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movie_data) =>{d3.csv("data_cleaned_merged/line_percents_by_gender.csv").then((data) => {
+      d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movie_data) =>{d3.csv("data_cleaned_merged/line_percents_by_gender.csv").then((data) => { d3.csv("data_cleaned_merged/movie_lines_with_all_metadata.csv").then((data_position) => {
         movie_dictionnary = new Map()
         movie_data.forEach(function(d){
           genres = d.genres.slice(1, -1)
@@ -72,6 +72,14 @@ div.tooltip {
             d.genre =g
           }
         })
+
+        data_position = data_position.filter(d=>{
+        let pos = d["Position_in_Credits"];
+        if(pos<9){
+          return d;
+        }
+      })
+        let selectedData = data_position;
         const all_data = data
         //genre tabbing 
         document.getElementById("action").onclick = function(){selectGenre("action")};
@@ -83,6 +91,7 @@ div.tooltip {
         function selectGenre(g){
           if(g == "all"){
             data = all_data
+            selectedData = data_position
           }else{
           data = all_data.filter(d=>{
             if(movie_dictionnary.has(d.Title)){
@@ -93,11 +102,21 @@ div.tooltip {
               console.log("error: movie not in genre dictionnary:  " + d.Title);
             
             }
-          })}
+          })
+          selectedData = data_position.filter(d=> {
+            let genres = d["Genres"].slice(1, -1);
+            genres = genres.split("'");
+            genres = genres.filter(genre => genre === g);
+            if(genres.length === 1){
+              return d;
+            }
+          })
+        }
           update();
+          updatePosition();
         }
 
-       
+     
         
         // SVG setup
         const margin = {top: 10, right: 10, bottom: 30, left: 30},
@@ -170,6 +189,9 @@ div.tooltip {
               .attr("cy", function(d) {
                   return - d.idx * 2 * d.radius - d.radius; })
               .attr("r", 0)
+              .on("click", function(d){
+                localStorage["movie"] = d.target.__data__.name
+              })
               .on("mouseover", tooltipOn)
               .on("mouseout", tooltipOff)
               .transition()
@@ -214,6 +236,9 @@ div.tooltip {
                 return - d.idx * 2 * d.radius - d.radius; })
               .attr("r", 0)
             .merge(dots)
+            .on("click", function(d){
+                localStorage["movie"] = d.target.__data__.name
+              })
               .on("mouseover", tooltipOn)
               .on("mouseout", tooltipOff)
               .transition()
@@ -255,6 +280,7 @@ div.tooltip {
         .call(d3.axisBottom(x));
 
         update();
+        updatePosition();
 
       // update with new data every 3sec
       // d3.interval(function() {
@@ -262,44 +288,12 @@ div.tooltip {
       // }, 3000);
 
         // document.getElementById("chart").appendChild(svg.node());
-    });
-  });
-    // positions graph
-    d3.csv("data_cleaned_merged/movie_lines_with_all_metadata.csv").then((allData) => {
-      allData = allData.filter(d=>{
-        let pos = d["Position_in_Credits"];
-        if(pos<9){
-          return d;
-        }
-      })
+         // positions graph
+   
+    
+    
 
-      let selectedData = allData;
-      //genre tabbing 
-      document.getElementById("action").onclick = function(){selectGenre("action")};
-      document.getElementById("adventure").onclick = function(){selectGenre("adventure")};
-      document.getElementById("drama").onclick = function(){selectGenre("drama")};
-      document.getElementById("comedy").onclick = function(){selectGenre("comedy")};
-      document.getElementById("romance").onclick = function(){selectGenre("romance")};
-      document.getElementById("all").onclick = function(){selectGenre("all")};
-      function selectGenre(g){
-        if(g == "all"){
-          selectedData = allData
-        }else{
-          selectedData = allData.filter(d=> {
-            let genres = d["Genres"].slice(1, -1);
-            genres = genres.split("'");
-            genres = genres.filter(genre => genre === g);
-            if(genres.length === 1){
-              return d;
-            }
-          })
-        }
-        update();
-      }
-
-      update();
-
-      function update(){
+      function updatePosition(){
         let oldChild = null
         if(document.getElementById("chart2") !== null){
           oldChild = document.getElementById("chart2").lastElementChild;
@@ -413,7 +407,11 @@ div.tooltip {
           document.getElementById("chart2").replaceChild(svg.node(), oldChild);
         }
       }
+
+    });
   });
+});
+   
 </script>
 </body>
 

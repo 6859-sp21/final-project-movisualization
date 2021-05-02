@@ -52,7 +52,7 @@
           t = update_year(parseInt(document.getElementById('slider').value))
           data_m = t[0]
           data_f = t[1]
-          console.log(t)
+          // console.log(t)
           update(data_m, data_f)          
         }
         d3.select("#slider").on("input", function (d) {
@@ -62,7 +62,7 @@
           t = update_year(this.value)
           data_m = t[0]
           data_f = t[1]
-          console.log(t)
+          // console.log(t)
           update(data_m, data_f)          
         })
 
@@ -205,8 +205,8 @@
         var color_f = '#619ba5'
 
         function update(data_m, data_f){
-          console.log(data_m)
-          console.log(data_f)
+          // console.log(data_m)
+          // console.log(data_f)
            // create line for male 
         svg.selectAll("circle").remove()
         svg.selectAll("path").remove()

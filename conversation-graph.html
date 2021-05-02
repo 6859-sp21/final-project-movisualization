@@ -2,8 +2,10 @@
   <head>
     <link rel="stylesheet" href="web.css">
     <script src="https://d3js.org/d3.v6.js"></script>
+
   </head>
   <body>
+    <h1 id="movie">Movie</h1>
     <div id="chart" style="width:620px;height:620px;">
     </div>
     <style>
@@ -33,7 +35,10 @@
             d.F_Percent = +d.Percent_Female*100
             d.M_Percent = +d.Percent_Male*100;
         })
-
+        window.addEventListener('storage', function(e) {  
+          document.getElementById("movie").innerHTML = localStorage["movie"]
+          //update
+        });   
         var movie = '10 things i hate about you';
 
         data_by_movie = allData.filter(d => {
