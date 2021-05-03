@@ -105,25 +105,34 @@
             .range([(height - margin.bottom)/2, height - margin.bottom])
             .nice();
 
+          
+          // const yScaleFA = d3.scaleLinear()
+          //   .domain([0, 100])
+          //   .range([height - margin.bottom, margin.top])
+          //   .nice();
+
+          // const yScaleMA = d3.scaleLinear()
+          //   .domain([0,100])
+          //   .range([(height - margin.bottom), height*2 - margin.bottom])
+          //   .nice();
+
+          // Drawing x-axis
+          // svg.append('g')
+          // .attr('transform', `translate(0, ${height - margin.bottom})`)
+          // .tickValues([])
+
+          // Drawing y-axis
+          svg.append('g')
+            .attr('transform', `translate(${margin.left}, 0)`)
+            .call(d3.axisLeft(yScaleF))
+
+          svg.append('g')
+            .attr('transform', `translate(${margin.left}, 0)`)
+            .call(d3.axisLeft(yScaleM))
+
           var tooltip = d3.select("body").append("div")
             .attr("class", "tooltip")
             .style("opacity", 0)
-
-          
-          // var males = data_by_movie.forEach(function(d){
-          //   d.value = d.M_Percent;
-          //   d.y = d.Conversation;
-          // });
-          // var females = data_by_movie.forEach(function(d){
-          //   d.value = d.F_Percent;
-          //   d.y = d.Conversation;
-          // });
-
-          // var layers = [females, males]
-
-          // var stack = d3.layout.stack()
-          //   .offset('wiggle')
-          //   .values(function(d){return d.values;});
 
           svg.append("g")
             .selectAll("g")
@@ -138,12 +147,16 @@
             .enter().append("rect")
               // .attr("x", function(d) { return xSubgroup(d.key); })
               .attr("y", function(d) {
+                console.log(yScaleM(d.value))
                 // return yScale(d.value);
-                if (d.key=='m'){ return yScaleM(d.value); }
+                if (d.key=='m'){ return (height - margin.bottom)/2}
                 else{return yScaleF(d.value);}
               })
               .attr("width", xSubgroup.bandwidth())
-              .attr("height", function(d) { return height - margin.bottom- yScaleF(d.value); })
+              .attr("height", function(d) { 
+                if(d.key=='m'){ return Math.abs((height - margin.bottom)/2 - yScaleM(d.value)); }
+                else{return (height - margin.bottom)/2 - yScaleF(d.value); }
+              })
               .attr("fill", function(d) { return color(d.key); })
               .on("mouseover", function(event, d){
                   tooltip.transition()
