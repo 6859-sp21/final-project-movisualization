@@ -33,6 +33,7 @@ h1{
 <script>
 
   hideAll();
+  showLines();
   window.addEventListener('storage', function(e) {  
     
     showMovie();
@@ -40,7 +41,7 @@ h1{
   });  
 
 
-  function showLines(b){
+  function showLines(){
     hideAll();
     document.getElementById("lines").classList.toggle("active");
     document.getElementById("line-graph").style.display = "block"
