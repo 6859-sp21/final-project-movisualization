@@ -4,10 +4,10 @@
     <link rel="stylesheet" href="web.css">
     <script src="https://d3js.org/d3.v6.js"></script>
   </head>
-  <div style="float:left; width: 50%;">
       <body>
-        <h2>Gender Distribution in Top 8 Credit's Positions</h1>
-
+        <div style ="float:left">
+        <h2>Gender Distribution of Top 8 Credit's Positions</h1>
+        <p style="width: 700px">In movies, the higher the credit's position of an actor the higher the pay is (1 being high - 8 being low). This visualization portrays the percentage of female/male actors at each credit's position. Hover, on the bars to see the specific percentages and toggle through the genres to see more detailed breakdowns.</p>
         <div id="tabs" style="margin: auto;">
           <button class="tablinks" id ="adventure">Adventure</button>
           <button class="tablinks" id ="action">Action</button>
@@ -16,21 +16,17 @@
           <button class="tablinks" id ="romance">Romance</button>
           <button class="tablinks" id ="all">All Genres</button>
         </div>
-    
-    <!-- <div id="chart" style="width:420px;height:420px;"> -->
-      <!-- This is where we will put our chart. -->
-    <!-- </div> -->
-      <p>In movies, the higher the credit's position of an actor the higher the pay is (1 being high - 8 being low)</p>
+      
       <div class="loader" id="loader1" style="margin-top: 120;"></div> 
 
       <div id="chart2" style="width:420px;height:420px;">
 
         <!-- This is where we will put our chart. -->
     </div>
-
   </div>
-  <div style = "float: right; width: 50%; ">
-    <h2> Distribution of average lines per positions in credits</h2>
+  <div style ="float:right">
+    <h2>Average lines by gender for each credit's position</h2>
+    <p style="width: 700px">In movies, the higher the credit's position of an actor the higher the pay is (1 being high - 8 being low). This visualization depicts what percentage of lines a male/female character has given their credit's position in the film. Clicking on a genre will also change this graph to reflect that selected genre.</p>
     <div class="loader" id="loader2" style="margin-top: 120;"></div> 
 
     <div id="chart" style="width:420px;height:420px;"></div>
