@@ -6,23 +6,10 @@
   </head>
   <body>
     <h1 id="movie">Movie</h1>
+    <p style="width: 700px">Each Conversation Breakdown by Percentage of Male and Female lines. Hover over bars to see specific percentages and the conversation ID.</p>
     <div id="chart" style="width:1000px;height:620px;">
     </div>
     <style>
-    div.tooltip {
-        color: black;
-        position: absolute;
-        text-align: left;
-        width: auto;
-        height: auto;
-        padding: 5px;
-        font-family: Futura;
-        font: 12px sans-serif ;
-        background: #FCB8C3FF;
-        border: 0px;
-        border-radius: 8px;
-        pointer-events: none;
-        }
     </style>
 
     <script>
@@ -164,9 +151,9 @@
                   .style("opacity", .9)
                   tooltip.html(function(){
                     if(d.key === 'm'){
-                      return "Male Percent: " + parseInt(d.value) +"%" + '\n' + "Conversation: " + parseInt(d.conv)
+                      return "Male Percent: " + parseInt(d.value) +"%" + '\n' + "Conversation ID: " + parseInt(d.conv)
                     }else{
-                      return "Female Percent: " + parseInt(d.value)+"%" + '\n' + "Conversation: " + parseInt(d.conv)
+                      return "Female Percent: " + parseInt(d.value)+"%" + '\n' + "Conversation ID: " + parseInt(d.conv)
                     }
                   })
                     .style("left", (event.pageX) + "px")
