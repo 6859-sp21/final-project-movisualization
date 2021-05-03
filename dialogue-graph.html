@@ -333,7 +333,7 @@
         }
           const height = 400;
         const width = 500;
-        const margin = ({top: 10, right: 10, bottom: 20, left: 30});
+        const margin = ({top: 10, right: 10, bottom: 50, left: 60});
         var color = d3.scaleOrdinal()
         .domain(['m','f'])
         .range(['#f5d6b0','#619ba5'])
@@ -374,7 +374,14 @@
         // //7. Drawing our y-axis
         svg.append('g')
           .attr('transform', `translate(${margin.left}, 0)`)
-          .call(d3.axisLeft(yScale))
+          .call(d3.axisLeft(yScale).tickFormat(d => d + "%"))
+
+        svg.append("text")             
+          .attr("transform",
+                "translate(" + (width/2) + " ," + 
+                              (height + margin.top - 20) + ")")
+          .style("text-anchor", "middle")
+          .text("Position in Credits");
         
         var tooltip = d3.select("body").append("div")
         .attr("class", "tooltip")

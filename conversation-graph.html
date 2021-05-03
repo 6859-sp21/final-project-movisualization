@@ -6,7 +6,7 @@
   </head>
   <body>
     <h1 id="movie">Movie</h1>
-    <div id="chart" style="width:1000px;height:620px;">
+    <div id="chart">
     </div>
     <style>
     div.tooltip {
@@ -66,7 +66,6 @@
           for (i=0; i<data_by_movie.length; i++){
             data_by_movie[i].position = i
           }
-          console.log(data_by_movie)
           
 
   
@@ -74,8 +73,8 @@
           // var mMax = Math.max(20, d3.max(data_by_movie, function(d){return d.M_Percent}));
 
           const height = 300;
-          const width = 1000;;
-          const margin = ({top: 10, right: 10, bottom: 20, left: 30});
+          const width = 800;;
+          const margin = ({top: 10, right: 10, bottom: 60, left: 60});
           var color = d3.scaleOrdinal()
               .domain(['m','f'])
               .range(['#f5d6b0','#619ba5'])
@@ -124,11 +123,34 @@
           // Drawing y-axis
           svg.append('g')
             .attr('transform', `translate(${margin.left}, 0)`)
-            .call(d3.axisLeft(yScaleF))
+            .call(d3.axisLeft(yScaleF).tickFormat(d => d + "%"))
 
           svg.append('g')
             .attr('transform', `translate(${margin.left}, 0)`)
-            .call(d3.axisLeft(yScaleM))
+            .call(d3.axisLeft(yScaleM).tickFormat(d => d + "%"))
+
+          svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 )
+            .attr("x",0 - (height / 2) + margin.top - 60)
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text('Male Percent');    
+          
+          svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 )
+            .attr("x",0 - (height / 2)+margin.top + 60)
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text('Female Percent');  
+
+          svg.append("text")             
+            .attr("transform",
+                  "translate(" + (width/2) + " ," + 
+                                (height + margin.top + 20) + ")")
+            .style("text-anchor", "middle")
+            .text("Movie Conversations");
 
           var tooltip = d3.select("body").append("div")
             .attr("class", "tooltip")
@@ -147,7 +169,6 @@
             .enter().append("rect")
               // .attr("x", function(d) { return xSubgroup(d.key); })
               .attr("y", function(d) {
-                console.log(yScaleM(d.value))
                 // return yScale(d.value);
                 if (d.key=='m'){ return (height - margin.bottom)/2}
                 else{return yScaleF(d.value);}

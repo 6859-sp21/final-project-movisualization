@@ -273,6 +273,7 @@
           .data(dataPos[0])
           .attr('transform', d => `translate(${xScale(-1.08)},${y(d.position) + y.bandwidth() / 2})`))
 
+
         document.getElementById("chart2").appendChild(svgPos.node());
         updateDataLine();
         doneLoading();
