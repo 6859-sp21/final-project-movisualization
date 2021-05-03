@@ -179,7 +179,6 @@
         const t = d3.transition()
               .duration(1000);
          
-        // }
         var color = d3.scaleLinear().domain([1,100]).range(["#f5d6b0", "#619ba5"])
         // Function for graph
         function update(){
@@ -279,7 +278,6 @@
                 .duration(500)
                 .attr("r", function(d) {
                 return (d.length==0) ? 0 : d.radius; })
-      // });
       };
 
         function tooltipOn(d) {
@@ -311,20 +309,11 @@
         svg.append("g")
         // .attr("class", "axis axis--x")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x).tickFormat(d => d + "%"));
 
         update();
         updateDataPos();
         doneLoading();
-        
-
-      // update with new data every 3sec
-      // d3.interval(function() {
-      //   update();
-      // }, 3000);
-
-        // document.getElementById("chart").appendChild(svg.node());
-         // positions graph
    
         function updateDataPos(){
           let oldChild = null

@@ -383,7 +383,14 @@
         // //7. Drawing our y-axis
         svg.append('g')
           .attr('transform', `translate(${margin.left}, 0)`)
-          .call(d3.axisLeft(yScale))
+          .call(d3.axisLeft(yScale).tickFormat(d => d + "%"))
+        
+        svg.append("text")             
+        .attr("transform",
+              "translate(" + (width/2) + " ," + 
+                            (height + margin.top) + ")")
+        .style("text-anchor", "middle")
+        .text("Position in Credits");
         
         var tooltip = d3.select("body").append("div")
         .attr("class", "tooltip")
