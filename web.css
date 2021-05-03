@@ -55,9 +55,9 @@ margin-left: 150;
 
 
 .bigtab {
-  padding:20px;
-  font-size : 20px;
-  width: 200px;
+  padding:10px;
+  font-size : 18px;
+  width: 180px;
   border: 2px solid gray;
   background-color: white;
   cursor: pointer;

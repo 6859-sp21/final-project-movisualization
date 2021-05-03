@@ -2,17 +2,22 @@
     <script src="https://d3js.org/d3.v6.js"></script>
     <link rel="stylesheet" href="web.css">
     <h1> Reading between the lines... </h1>
-    <p>Looking into the gender roles in a random sample of 617 movies blah blah</p>
-
-    <div id="tabs" style="margin: auto; width:80%">
+    <p style="margin-left: 150px; margin-right: 150px; font-weight: 300;">Movies are an entertainment form that people have been enjoying since the 1880s. However, in the past few years equality, represenation, and discrimination have been the topic of discussion. We want to add data and information to the discussion to see the breakdown of male and female dialogues, credit's positions, and change over the years in the movies we all know and love. We also 
+      have an extended breakdown into our visualizations by genre and by specifc movie to explore the changes and effects even further.
+    </p>
+    <p style="margin-left: 150px; margin-right: 150px; margin-bottom: 30px; font-weight: 300;">
+      Our dataset consists of 617 popularized movies which involves 9,035 characters with 220,579 conversational exchanges between 10,292 pairs of movie characters.
+    </p>
+    <div id="tabs" style="margin: auto; width:80%;">
       <button class="bigtab" id ="lines" onclick="showLines(this)">Lines</button>
       <button class="bigtab" id ="credits" onclick="showCredits()">Credits position</button>
       <button class="bigtab" id ="year" onclick="showYear()">Year</button>
       <button class="bigtab" id ="movie-name">Movie</button>
+      <span class="dot" style = "background-color:#619ba5; margin-left: 20px;">  </span> Female
+      <span class="dot" style = "background-color:#f5d6b0;">  </span> Male
     </div>
     <div id="line-graph">
     <iframe src="dialogue-graph.html" height="550" width="1800"style="border:none; " ></iframe>
-    <p> blah blah</p>
     </div>
     <div id = "year-graph">
     <iframe src="dialogue-year-graph.html" height="600" width="1030"style="border:none;" ></iframe>
@@ -27,7 +32,16 @@
 h1{
   text-align:center;
   font-weight: normal;
+  font-size: 50px;
 }
+
+.dot{
+    
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    display: inline-block;
+   }
    
 </style>
 <script>
