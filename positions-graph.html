@@ -15,6 +15,8 @@
           <button class="tablinks" id ="comedy">Comedy</button>
           <button class="tablinks" id ="romance">Romance</button>
           <button class="tablinks" id ="all">All Genres</button>
+          <span class="dot" style = "background-color:#619ba5; margin-left: 20px;">  </span> Female
+          <span class="dot" style = "background-color:#f5d6b0;">  </span> Male
         </div>
       
       <div class="loader" id="loader1" style="margin-top: 120;"></div> 
@@ -29,7 +31,13 @@
     <p style="width: 700px">In movies, the higher the credit's position of an actor the higher the pay is (1 being high - 8 being low). This visualization depicts what percentage of lines a male/female character has given their credit's position in the film. Clicking on a genre will also change this graph to reflect that selected genre.</p>
     <div class="loader" id="loader2" style="margin-top: 120;"></div> 
 
-    <div id="chart" style="width:420px;height:420px;"></div>
+    <div id="chart" style="width:420px;height:420px; float:left">
+      
+    </div>
+    <div style = "float:right">
+      <span class="dot" style = "background-color:#619ba5; margin-left: 20px;">  </span> Female
+      <span class="dot" style = "background-color:#f5d6b0;">  </span> Male
+    </div>
 
   </div>
     <style>
@@ -38,6 +46,7 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
     </style>
 
     <script> 

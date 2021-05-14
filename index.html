@@ -1,22 +1,22 @@
 <html>
     <script src="https://d3js.org/d3.v6.js"></script>
     <link rel="stylesheet" href="web.css">
+    <div class="header-container">
     <h1> Reading between the lines... </h1>
-    <p style="margin-left: 150px; margin-right: 150px; font-weight: 300;">Movies are an entertainment form that people have been enjoying since the 1880s. However, in the past few years equality, represenation, and discrimination have been the topic of discussion. We want to add data and information to the discussion to see the breakdown of male and female dialogues, credit's positions, and change over the years in the movies we all know and love. We also 
+    <p style="font-weight: 300;">Movies are an entertainment form that people have been enjoying since the 1880s. However, in the past few years equality, represenation, and discrimination have been the topic of discussion. We want to add data and information to the discussion to see the breakdown of male and female dialogues, credit's positions, and change over the years in the movies we all know and love. We also 
       have an extended breakdown into our visualizations by genre and by specifc movie to explore the changes and effects even further.
     </p>
-    <p style="margin-left: 150px; margin-right: 150px; margin-bottom: 30px; font-weight: 300;">
-      Our dataset consists of 617 popularized movies which involves 9,035 characters with 220,579 conversational exchanges between 10,292 pairs of movie characters.
-    </p>
-    <div id="tabs" style="margin: auto; width:55%;">
+
+  </div>
+  <div class="home-body-container">
+    <div id="tabs" >
       <button class="bigtab" id ="lines" onclick="showLines(this)">Lines</button>
       <button class="bigtab" id ="credits" onclick="showCredits()">Credits position</button>
       <button class="bigtab" id ="year" onclick="showYear()">Year</button>
-      <button class="bigtab" id ="movie-name">Movie</button>
-      <span class="dot" style = "background-color:#619ba5; margin-left: 20px;">  </span> Female
-      <span class="dot" style = "background-color:#f5d6b0;">  </span> Male
+      <button class="bigtab" id ="rating">Rating</button>
+
     </div>
-    <div id="line-graph">
+    <div id="line-graph" class = "line-graph-container">
     <iframe src="dialogue-graph.html" height="650" width="1800"style="border:none; " ></iframe>
     </div>
     <div id = "year-graph">
@@ -26,22 +26,29 @@
     <div id = "movie-graph">
     <iframe src="conversation-graph.html" height="800" width="1800"style="border:none;" ></iframe>
   </div>
+  <div class = "foot-container">
+    <p style="font-weight: 300;">
+      Our dataset consists of 617 popularized movies which involves 9,035 characters with 220,579 conversational exchanges between 10,292 pairs of movie characters.
+    </p>
+    Source: <a href="https://www.kaggle.com/Cornell-University/movie-dialog-corpus?select=movie_titles_metadata.tsv"> Movie Dialog Corpus</a>
+  </div>
+</div>
  
 <style>
- 
+   
 h1{
   text-align:center;
   font-weight: normal;
   font-size: 50px;
 }
 
-.dot{
+/* .dot{
     
     height: 15px;
     width: 15px;
     border-radius: 50%;
     display: inline-block;
-   }
+   } */
    
 </style>
 <script>
@@ -49,38 +56,36 @@ h1{
   hideAll();
   showLines();
   window.addEventListener('storage', function(e) {  
-    
     showMovie();
-    document.getElementById("movie-name").classList.toggle("active");
   });  
 
 
   function showLines(){
     hideAll();
     document.getElementById("lines").classList.toggle("active");
-    document.getElementById("line-graph").style.display = "block"
+    document.getElementById("line-graph").style.display = "flex"
   }
   function showCredits(){
     hideAll();
     document.getElementById("credits").classList.toggle("active");
-    document.getElementById("credits-graph").style.display = "block"
+    document.getElementById("credits-graph").style.display = "flex"
   } 
   function showYear(){
     hideAll();
     document.getElementById("year").classList.toggle("active");
-    document.getElementById("year-graph").style.display = "block"
+    document.getElementById("year-graph").style.display = "flex"
   } 
   function showMovie(){
-    hideAll();
-    //document.getElementById("movie-name").style.backgoundColor = "#bdbcbc";
-    document.getElementById("movie-graph").style.display = "block"
+   
+    document.getElementById("movie-graph").style.display = "flex";
+    document.getElementById("movie-graph").scrollIntoView();
   } 
   function hideAll(){
     document.getElementById("line-graph").style.display = "none"
     document.getElementById("credits-graph").style.display = "none"
     document.getElementById("year-graph").style.display = "none"
     document.getElementById("movie-graph").style.display = "none"
-    document.getElementById("movie-name").classList.remove("active");
+    document.getElementById("rating").classList.remove("active");
     document.getElementById("year").classList.remove("active");
     document.getElementById("credits").classList.remove("active");
     document.getElementById("lines").classList.remove("active");
