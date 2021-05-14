@@ -19,6 +19,7 @@
           <button class="tablinks" id ="fantasy">Fantasy</button>
           <button class="tablinks" id ="crime">Crime</button>
           <button class="tablinks" id ="war">War</button>
+          <button class="tablinks" id ="documentary">Documentary</button>
 
           <button class="tablinks" id ="all">All Genres</button>
           <div style="font-weight: 400; display:flex" >
@@ -137,6 +138,7 @@
         document.getElementById("fantasy").onclick = function(){selectGenre("fantasy")};
         document.getElementById("crime").onclick = function(){selectGenre("crime")};
         document.getElementById("war").onclick = function(){selectGenre("war")};
+        document.getElementById("documentary").onclick = function(){selectGenre("documentary")};
 
         document.getElementById("all").onclick = function(){selectGenre("all")};
 
@@ -158,6 +160,7 @@
           document.getElementById("fantasy").classList.remove("active");
           document.getElementById("crime").classList.remove("active");
           document.getElementById("war").classList.remove("active");
+          document.getElementById("documentary").classList.remove("active");
 
           document.getElementById("all").classList.remove("active");
           document.getElementById(g).classList.toggle("active");
