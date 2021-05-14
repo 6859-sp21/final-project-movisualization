@@ -14,6 +14,12 @@
           <button class="tablinks" id ="drama">Drama</button>
           <button class="tablinks" id ="comedy">Comedy</button>
           <button class="tablinks" id ="romance">Romance</button>
+
+          <button class="tablinks" id ="thriller">Thriller</button>
+          <button class="tablinks" id ="fantasy">Fantasy</button>
+          <button class="tablinks" id ="crime">Crime</button>
+          <button class="tablinks" id ="war">War</button>
+
           <button class="tablinks" id ="all">All Genres</button>
           <div style="font-weight: 400; display:flex" >
             <span class="dot" style = "background-color:#619ba5; "></span>
@@ -125,6 +131,13 @@
         document.getElementById("drama").onclick = function(){selectGenre("drama")};
         document.getElementById("comedy").onclick = function(){selectGenre("comedy")};
         document.getElementById("romance").onclick = function(){selectGenre("romance")};
+
+        // Experimenting with other genres
+        document.getElementById("thriller").onclick = function(){selectGenre("thriller")};
+        document.getElementById("fantasy").onclick = function(){selectGenre("fantasy")};
+        document.getElementById("crime").onclick = function(){selectGenre("crime")};
+        document.getElementById("war").onclick = function(){selectGenre("war")};
+
         document.getElementById("all").onclick = function(){selectGenre("all")};
 
         window.addEventListener('storage', function(e) {  
@@ -139,6 +152,13 @@
           document.getElementById("drama").classList.remove("active");
           document.getElementById("comedy").classList.remove("active");
           document.getElementById("romance").classList.remove("active");
+
+          // Experimenting with other genres
+          document.getElementById("thriller").classList.remove("active");
+          document.getElementById("fantasy").classList.remove("active");
+          document.getElementById("crime").classList.remove("active");
+          document.getElementById("war").classList.remove("active");
+
           document.getElementById("all").classList.remove("active");
           document.getElementById(g).classList.toggle("active");
           sessionStorage["genreLine"] = g;
