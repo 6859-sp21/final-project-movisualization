@@ -1,464 +1,484 @@
 <html>
-  <head>
-    <!-- Load d3.js -->
-    <link rel="stylesheet" href="web.css">
-    <script src="https://d3js.org/d3.v6.js"></script>
-  </head>
-      <body>
-        <div style ="float:left">
-        <h2>Gender Distribution of Top 8 Credit's Positions</h1>
-        <p style="width: 700px">In movies, the higher the credit's position of an actor the higher the pay is (1 being high - 8 being low). This visualization portrays the percentage of female/male actors at each credit's position. Hover, on the bars to see the specific percentages and toggle through the genres to see more detailed breakdowns.</p>
-        <div id="tabs" style="margin: auto;">
-          <button class="tablinks" id ="adventure">Adventure</button>
-          <button class="tablinks" id ="action">Action</button>
-          <button class="tablinks" id ="drama">Drama</button>
-          <button class="tablinks" id ="comedy">Comedy</button>
-          <button class="tablinks" id ="romance">Romance</button>
-          <button class="tablinks" id ="all">All Genres</button>
-          <span class="dot" style = "background-color:#619ba5; margin-left: 20px;">  </span> Female
-          <span class="dot" style = "background-color:#f5d6b0;">  </span> Male
+
+<head>
+  <!-- Load d3.js -->
+  <link rel="stylesheet" href="web.css">
+  <script src="https://d3js.org/d3.v6.js"></script>
+</head>
+
+<body>
+  <div class="credit-container">
+    <div class="credit-graph-subcontainer">
+    <h2>Gender Distribution of Top 8 Credit's Positions</h1>
+      <p style="width: 700px">In movies, the higher the credit's position of an actor the higher the pay is (1 being
+        high - 8 being low). This visualization portrays the percentage of female/male actors at each credit's position.
+        Hover, on the bars to see the specific percentages and toggle through the genres to see more detailed
+        breakdowns.</p>
+      <div class="tabs" id="tabs" style="margin: auto;">
+        <button class="tablinks" id="adventure">Adventure</button>
+        <button class="tablinks" id="action">Action</button>
+        <button class="tablinks" id="drama">Drama</button>
+        <button class="tablinks" id="comedy">Comedy</button>
+        <button class="tablinks" id="romance">Romance</button>
+        <button class="tablinks" id="all">All Genres</button>
+        <div style="font-weight: 400; display:flex">
+          <span class="dot" style="background-color:#619ba5; "></span>
+          <span style="margin-top: 7;">Female</span>
+          <span class="dot" style="background-color:#f5d6b0;"> </span>
+          <span style="margin-top: 7;">Male</span>
         </div>
-      
-      <div class="loader" id="loader1" style="margin-top: 120;"></div> 
+      </div>
 
-      <div id="chart2" style="width:420px;height:420px;">
+      <div class="loader" id="loader1" style="margin-top: 120;"></div>
 
-        <!-- This is where we will put our chart. -->
+      <div id="chart2" style="width:420px;height:420px;"></div>
+      </div>
+      <div class = "credit-graph-subcontainer-2">
+      <h2>Average lines by gender for each credit's position</h2>
+      <p style="width: 700px">In movies, the higher the credit's position of an actor the higher the pay is (1 being
+        high - 8 being low). This visualization depicts what percentage of lines a male/female character has given their
+        credit's position in the film. Clicking on a genre will also change this graph to reflect that selected genre.
+      </p>
+      <div class="loader" id="loader2" style="margin-top: 120;"></div>
+      <div id="chart" style="width:420px;height:420px; float:left"></div>
     </div>
   </div>
-  <div style ="float:right">
-    <h2>Average lines by gender for each credit's position</h2>
-    <p style="width: 700px">In movies, the higher the credit's position of an actor the higher the pay is (1 being high - 8 being low). This visualization depicts what percentage of lines a male/female character has given their credit's position in the film. Clicking on a genre will also change this graph to reflect that selected genre.</p>
-    <div class="loader" id="loader2" style="margin-top: 120;"></div> 
+  <style>
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
 
-    <div id="chart" style="width:420px;height:420px; float:left">
-      
-    </div>
-    <div style = "float:right">
-      <span class="dot" style = "background-color:#619ba5; margin-left: 20px;">  </span> Female
-      <span class="dot" style = "background-color:#f5d6b0;">  </span> Male
-    </div>
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 
-  </div>
-    <style>
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-    </style>
-
-    <script> 
+  <script>
     function doneLoading() {
-        document.getElementById("loader1").style.display = "none";
-        document.getElementById("loader2").style.display = "none";
-     };
+      document.getElementById("loader1").style.display = "none";
+      document.getElementById("loader2").style.display = "none";
+    };
 
-      d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movie_data) =>{d3.csv("data_cleaned_merged/line_percents_by_character.csv").then((data_line) => { d3.csv("data_cleaned_merged/movie_lines_with_all_metadata.csv").then((data_position) => {
-        movie_dictionnary = new Map()
-        movie_data.forEach(function(d){
-          genres = d.genres.slice(1, -1)
-          genres = new Set(genres.split("'"))
-          movie_dictionnary.set(d.title,genres)
-        })
+    d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movie_data) => {
+      d3.csv("data_cleaned_merged/line_percents_by_character.csv").then((data_line) => {
+        d3.csv("data_cleaned_merged/movie_lines_with_all_metadata.csv").then((data_position) => {
+          movie_dictionnary = new Map()
+          movie_data.forEach(function (d) {
+            genres = d.genres.slice(1, -1)
+            genres = new Set(genres.split("'"))
+            movie_dictionnary.set(d.title, genres)
+          })
 
 
-        data_position = data_position.filter(d=>{
+          data_position = data_position.filter(d => {
             let pos = d["Position_in_Credits"];
-            if(pos<9){
-            return d;
-            }
-        })
-        function filterDataLine(all_data){
-          data_know_gender = all_data.filter(d => { 
-          
-          if ((d.Gender === 'm' || d.Gender === 'f') && parseInt(d.Position_in_Credits) <= 10){
-            return d}
-          })
-          data_pos = []
-          count = []
-          for(let i =1; i<=10;i++){
-            let temp_count = {male_count:0, female_count:0, male_sum:0, female_sum:0}
-            let temp = {position:i, male_lines_avg:0, female_lines_avg:0}
-            data_pos.push(temp)
-            count.push(temp_count)
-          }
-          data_know_gender.forEach(function(d, index) {
-            if(d.Gender === 'm'){
-              count[parseInt(d.Position_in_Credits)-1].male_count++
-              count[parseInt(d.Position_in_Credits)-1].male_sum += parseFloat(d.Character_Line_Percent)
-            }
-            if(d.Gender === 'f'){
-              count[parseInt(d.Position_in_Credits)-1].female_count++
-              count[parseInt(d.Position_in_Credits)-1].female_sum += parseFloat(d.Character_Line_Percent)
+            if (pos < 9) {
+              return d;
             }
           })
-          for(let i = 0; i < 10; i++){
-            data_pos[i].male_lines_avg = (count[i].male_sum/count[i].male_count)*100
-            data_pos[i].female_lines_avg = (count[i].female_sum/count[i].female_count)*100
-          }
-          return data_pos
-        }
-        let selectedData = data_position;
-        const all_data_line = data_line
-        data_line = filterDataLine(all_data_line)
-        document.getElementById("all").classList.toggle("active");
-        //genre tabbing 
-        document.getElementById("action").onclick = function(){selectGenre("action")};
-        document.getElementById("adventure").onclick = function(){selectGenre("adventure")};
-        document.getElementById("drama").onclick = function(){selectGenre("drama")};
-        document.getElementById("comedy").onclick = function(){selectGenre("comedy")};
-        document.getElementById("romance").onclick = function(){selectGenre("romance")};
-        document.getElementById("all").onclick = function(){selectGenre("all")};
-        function selectGenre(g){
-          document.getElementById("action").classList.remove("active");
-          document.getElementById("adventure").classList.remove("active");
-          document.getElementById("drama").classList.remove("active");
-          document.getElementById("comedy").classList.remove("active");
-          document.getElementById("romance").classList.remove("active");
-          document.getElementById("all").classList.remove("active");
-          document.getElementById(g).classList.toggle("active");
-            if(g == "all"){
-                selectedData = data_position
-                data_line=all_data_line
-            }else{
-              data_line = all_data_line.filter(d=>{
-            if(movie_dictionnary.has(d.Title)){
-              if(movie_dictionnary.get(d.Title).has(g)){
-                return d;
+          function filterDataLine(all_data) {
+            data_know_gender = all_data.filter(d => {
+
+              if ((d.Gender === 'm' || d.Gender === 'f') && parseInt(d.Position_in_Credits) <= 10) {
+                return d
               }
-            }else{
-              console.log("error: movie not in genre dictionnary:  " + d.Title);
-            
+            })
+            data_pos = []
+            count = []
+            for (let i = 1; i <= 10; i++) {
+              let temp_count = { male_count: 0, female_count: 0, male_sum: 0, female_sum: 0 }
+              let temp = { position: i, male_lines_avg: 0, female_lines_avg: 0 }
+              data_pos.push(temp)
+              count.push(temp_count)
             }
-          })
-                selectedData = data_position.filter(d=> {
-                    let genres = d["Genres"].slice(1, -1);
-                    genres = genres.split("'");
-                    genres = genres.filter(genre => genre === g);
-                    if(genres.length === 1){
+            data_know_gender.forEach(function (d, index) {
+              if (d.Gender === 'm') {
+                count[parseInt(d.Position_in_Credits) - 1].male_count++
+                count[parseInt(d.Position_in_Credits) - 1].male_sum += parseFloat(d.Character_Line_Percent)
+              }
+              if (d.Gender === 'f') {
+                count[parseInt(d.Position_in_Credits) - 1].female_count++
+                count[parseInt(d.Position_in_Credits) - 1].female_sum += parseFloat(d.Character_Line_Percent)
+              }
+            })
+            for (let i = 0; i < 10; i++) {
+              data_pos[i].male_lines_avg = (count[i].male_sum / count[i].male_count) * 100
+              data_pos[i].female_lines_avg = (count[i].female_sum / count[i].female_count) * 100
+            }
+            return data_pos
+          }
+          let selectedData = data_position;
+          const all_data_line = data_line
+          data_line = filterDataLine(all_data_line)
+          
+          document.getElementById("all").classList.toggle("active");
+          //genre tabbing 
+          document.getElementById("action").onclick = function () { selectGenre("action") };
+          document.getElementById("adventure").onclick = function () { selectGenre("adventure") };
+          document.getElementById("drama").onclick = function () { selectGenre("drama") };
+          document.getElementById("comedy").onclick = function () { selectGenre("comedy") };
+          document.getElementById("romance").onclick = function () { selectGenre("romance") };
+          document.getElementById("all").onclick = function () { selectGenre("all") };
+          window.addEventListener('storage', function(e) {  
+            if(e.key == "genreLine"){
+              selectGenre(sessionStorage["genreLine"]);
+            }
+          });  
+          function selectGenre(g) {
+            document.getElementById("action").classList.remove("active");
+            document.getElementById("adventure").classList.remove("active");
+            document.getElementById("drama").classList.remove("active");
+            document.getElementById("comedy").classList.remove("active");
+            document.getElementById("romance").classList.remove("active");
+            document.getElementById("all").classList.remove("active");
+            document.getElementById(g).classList.toggle("active");
+            sessionStorage["genreCredits"] = g;
+            if (g == "all") {
+              selectedData = data_position
+              data_line = all_data_line
+            } else {
+              data_line = all_data_line.filter(d => {
+                if (movie_dictionnary.has(d.Title)) {
+                  if (movie_dictionnary.get(d.Title).has(g)) {
                     return d;
-                    }
-                })
+                  }
+                } else {
+                  console.log("error: movie not in genre dictionnary:  " + d.Title);
+
+                }
+              })
+              selectedData = data_position.filter(d => {
+                let genres = d["Genres"].slice(1, -1);
+                genres = genres.split("'");
+                genres = genres.filter(genre => genre === g);
+                if (genres.length === 1) {
+                  return d;
+                }
+              })
             }
-          // update();
-          data_line = filterDataLine(data_line)
-          updateDataLine();
-          updatePosition();
-        }
+            // update();
+            data_line = filterDataLine(data_line)
+            updateDataLine();
+            updatePosition();
+          }
 
-     
 
-        // format data for positions graph 
-        // array of 2 arrays of objects: {position: # (1-8), gender: 'f'/'m', percentage: #(female/male percentage at position #), start: (where bar should start), end: (where bar should end), total: #(people at position #)}
-        // first array is of females, second is of males
-        let dataPos = [[],[]]
-        for(let i = 0; i<8; i++){
+
+          // format data for positions graph 
+          // array of 2 arrays of objects: {position: # (1-8), gender: 'f'/'m', percentage: #(female/male percentage at position #), start: (where bar should start), end: (where bar should end), total: #(people at position #)}
+          // first array is of females, second is of males
+          let dataPos = [[], []]
+          for (let i = 0; i < 8; i++) {
             dataPos[0].push({
-                position: i+1, 
-                gender: 'f',
-                percentage: 0, 
-                start: -0.5,
-                end: 0,
-                total: 0
+              position: i + 1,
+              gender: 'f',
+              percentage: 0,
+              start: -0.5,
+              end: 0,
+              total: 0
             });
             dataPos[1].push({
-                position: i+1, 
-                gender: 'm',
-                percentage: 0, 
-                start: 0,
-                end: 0.5,
-                total: 0
+              position: i + 1,
+              gender: 'm',
+              percentage: 0,
+              start: 0,
+              end: 0.5,
+              total: 0
             });
-        }
-
-        // filter out all data that isn't top 8 and get totals for female, male, and overall
-        selectedData.forEach(d => {  
-          let pos = d["Position_in_Credits"];
-          if(d["Gender"] == 'f'){
-            dataPos[0][pos-1].percentage += 1;
-          }else{
-            dataPos[1][pos-1].percentage += 1;
           }
-          dataPos[0][pos-1].total += 1;
-          dataPos[1][pos-1].total += 1;
-        });
-        
-        // get percentage and set start (left) and end (right) of bars
-        dataPos[0] = dataPos[0].map(d => {
+
+          // filter out all data that isn't top 8 and get totals for female, male, and overall
+          selectedData.forEach(d => {
+            let pos = d["Position_in_Credits"];
+            if (d["Gender"] == 'f') {
+              dataPos[0][pos - 1].percentage += 1;
+            } else {
+              dataPos[1][pos - 1].percentage += 1;
+            }
+            dataPos[0][pos - 1].total += 1;
+            dataPos[1][pos - 1].total += 1;
+          });
+
+          // get percentage and set start (left) and end (right) of bars
+          dataPos[0] = dataPos[0].map(d => {
             d.percentage /= d.total;
-            d.end = -0.5+d.percentage;
+            d.end = -0.5 + d.percentage;
             return d;
-        })
-        dataPos[1] = dataPos[1].map(d => {
+          })
+          dataPos[1] = dataPos[1].map(d => {
             d.percentage /= d.total;
-            d.start = 0.5-d.percentage;
+            d.start = 0.5 - d.percentage;
             return d;
-        })
-        const tooltip = d3.select("body")
-          .append("div")
+          })
+          const tooltip = d3.select("body")
+            .append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
 
-        // Setting up variables that describe our chart's space.
-        const heightPos = 400;
-        const widthPos = 500;;
-        const marginPos = ({top: 20, right: 10, bottom: 20, left: 30});
-        const colorPos = d3.scaleOrdinal()
-        .domain(['m','f'])
-        .range(['#f5d6b0','#619ba5'])
+          // Setting up variables that describe our chart's space.
+          const heightPos = 400;
+          const widthPos = 500;;
+          const marginPos = ({ top: 20, right: 10, bottom: 20, left: 30 });
+          const colorPos = d3.scaleOrdinal()
+            .domain(['m', 'f'])
+            .range(['#f5d6b0', '#619ba5'])
 
-        // Create a SVG we will use to make our chart.
-        const svgPos = d3.create('svg')
-          .attr('width', widthPos)
-          .attr('height', heightPos);
+          // Create a SVG we will use to make our chart.
+          const svgPos = d3.create('svg')
+            .attr('width', widthPos)
+            .attr('height', heightPos);
 
-        // Setting up scales for xAxis and yAxis
-        const xScale = d3.scaleLinear()
-          .domain([-0.5, 0.5])
-          .range([marginPos.left, widthPos - marginPos.right]);
+          // Setting up scales for xAxis and yAxis
+          const xScale = d3.scaleLinear()
+            .domain([-0.5, 0.5])
+            .range([marginPos.left, widthPos - marginPos.right]);
 
-        const y = d3.scaleBand()
-          .domain([1, 2, 3, 4, 5, 6, 7, 8])
-          .range([marginPos.top, heightPos - marginPos.bottom])
-          .padding([0.2]);
-      
-        // bars 
-        var bar = svgPos.append('g')
-        .selectAll("g")
+          const y = d3.scaleBand()
+            .domain([1, 2, 3, 4, 5, 6, 7, 8])
+            .range([marginPos.top, heightPos - marginPos.bottom])
+            .padding([0.2]);
+
+          // bars 
+          var bar = svgPos.append('g')
+            .selectAll("g")
             .data(dataPos)
             .join("g")
             .attr("fill", d => colorPos(d[0].gender))
             .selectAll("rect")
-            .data(d => d.map(v => Object.assign(v, {key: d.position})))
+            .data(d => d.map(v => Object.assign(v, { key: d.position })))
             .join("rect")
             .attr("x", d => xScale(d.start))
             .attr("y", d => y(d.position))
             .attr("width", d => xScale(d.end) - xScale(d.start))
             .attr("height", y.bandwidth())
-            .on("mouseover", function(event, d){
-                tooltip.transition()
+            .on("mouseover", function (event, d) {
+              tooltip.transition()
                 .duration(200)
                 .style("opacity", .9)
-                tooltip.html(function(){
-                    if(d.gender === 'm'){
-                        return `Males in position ${d.position}: ${(d.percentage*100).toFixed(1)}%`
-                    }else{
-                        return `Females in position ${d.position}: ${(d.percentage*100).toFixed(1)}%`
-                    }
-                })
-                  .style("left", (event.pageX) + "px")
-                  .style("top", (event.pageY - 28) + "px");
-             })
-            .on("mouseout", function(event, d) {
-                tooltip.transition()
+              tooltip.html(function () {
+                if (d.gender === 'm') {
+                  return `Males in position ${d.position}: ${(d.percentage * 100).toFixed(1)}%`
+                } else {
+                  return `Females in position ${d.position}: ${(d.percentage * 100).toFixed(1)}%`
+                }
+              })
+                .style("left", (event.pageX) + "px")
+                .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function (event, d) {
+              tooltip.transition()
                 .duration(500)
                 .style("opacity", 0);
             })
-        
-        d3.select("#tabs").on("change", function(){
+
+          d3.select("#tabs").on("change", function () {
             updatePosition()
-        })
-        
-        //Drawing our x-axis
-        xAxis = svgPos.append('g')
-        .attr('transform', `translate(0, ${marginPos.top})`)
-        .call(d3.axisTop(xScale).tickSize(0).tickFormat(d => {
-            if(d*100 == 0){
+          })
+
+          //Drawing our x-axis
+          xAxis = svgPos.append('g')
+            .attr('transform', `translate(0, ${marginPos.top})`)
+            .call(d3.axisTop(xScale).tickSize(0).tickFormat(d => {
+              if (d * 100 == 0) {
                 return "50%";
-            }}))
+              }
+            }))
 
 
-        // Drawing our y-axis
-        yAxis = svgPos.append('g')
-          .attr('transform', `translate(${xScale(0)}, 0)`)
-          .call(d3.axisLeft(y))
-          .call(g => g.selectAll(".tick")
-          .data(dataPos[0])
-          .attr('transform', d => `translate(${xScale(-1.08)},${y(d.position) + y.bandwidth() / 2})`))
+          // Drawing our y-axis
+          yAxis = svgPos.append('g')
+            .attr('transform', `translate(${xScale(0)}, 0)`)
+            .call(d3.axisLeft(y))
+            .call(g => g.selectAll(".tick")
+              .data(dataPos[0])
+              .attr('transform', d => `translate(${xScale(-1.08)},${y(d.position) + y.bandwidth() / 2})`))
+
+          document.getElementById("chart2").appendChild(svgPos.node());
+          updateDataLine();
+      
+          
+          doneLoading();
 
 
-        document.getElementById("chart2").appendChild(svgPos.node());
-        updateDataLine();
-        doneLoading();
-   
-    
-    
 
-      function updatePosition(){
-        // format data for positions graph 
-        // array of 2 arrays of objects: {position: # (1-8), gender: 'f'/'m', percentage: #(female/male percentage at position #), start: (where bar should start), end: (where bar should end), total: #(people at position #)}
-        // first array is of females, second is of males
-        dataPos = [[],[]]
-        for(let i = 0; i<8; i++){
-            dataPos[0].push({
-                position: i+1, 
+
+          function updatePosition() {
+            // format data for positions graph 
+            // array of 2 arrays of objects: {position: # (1-8), gender: 'f'/'m', percentage: #(female/male percentage at position #), start: (where bar should start), end: (where bar should end), total: #(people at position #)}
+            // first array is of females, second is of males
+            dataPos = [[], []]
+            for (let i = 0; i < 8; i++) {
+              dataPos[0].push({
+                position: i + 1,
                 gender: 'f',
-                percentage: 0, 
+                percentage: 0,
                 start: -0.5,
                 end: 0,
                 total: 0
-            });
-            dataPos[1].push({
-                position: i+1, 
+              });
+              dataPos[1].push({
+                position: i + 1,
                 gender: 'm',
-                percentage: 0, 
+                percentage: 0,
                 start: 0,
                 end: 0.5,
                 total: 0
+              });
+            }
+
+            // filter out all data that isn't top 8 and get totals for female, male, and overall
+            selectedData.forEach(d => {
+              let pos = d["Position_in_Credits"];
+              if (d["Gender"] == 'f') {
+                dataPos[0][pos - 1].percentage += 1;
+              } else {
+                dataPos[1][pos - 1].percentage += 1;
+              }
+              dataPos[0][pos - 1].total += 1;
+              dataPos[1][pos - 1].total += 1;
             });
-        }
 
-        // filter out all data that isn't top 8 and get totals for female, male, and overall
-        selectedData.forEach(d => {  
-          let pos = d["Position_in_Credits"];
-          if(d["Gender"] == 'f'){
-            dataPos[0][pos-1].percentage += 1;
-          }else{
-            dataPos[1][pos-1].percentage += 1;
+            // get percentage and set start (left) and end (right) of bars
+            dataPos[0] = dataPos[0].map(d => {
+              d.percentage /= d.total;
+              d.end = -0.5 + d.percentage;
+              return d;
+            })
+            dataPos[1] = dataPos[1].map(d => {
+              d.percentage /= d.total;
+              d.start = 0.5 - d.percentage;
+              return d;
+            })
+
+            svgPos.selectAll("rect")
+              .data(dataPos.flat())
+              .join("rect")
+              .transition().duration(1000)
+              .attr("fill", d => colorPos(d.gender))
+              .attr("x", d => xScale(d.start))
+              .attr("y", d => y(d.position))
+              .attr("width", d => xScale(d.end) - xScale(d.start))
+              .attr("height", y.bandwidth())
           }
-          dataPos[0][pos-1].total += 1;
-          dataPos[1][pos-1].total += 1;
-        });
-        
-        // get percentage and set start (left) and end (right) of bars
-        dataPos[0] = dataPos[0].map(d => {
-            d.percentage /= d.total;
-            d.end = -0.5+d.percentage;
-            return d;
-        })
-        dataPos[1] = dataPos[1].map(d => {
-            d.percentage /= d.total;
-            d.start = 0.5-d.percentage;
-            return d;
-        })
+          function updateDataLine() {
+            let oldChild = null
+            if (document.getElementById("chart") !== null) {
+              oldChild = document.getElementById("chart").lastElementChild;
+            }
+            const height = 400;
+            const width = 500;
+            const margin = ({ top: 10, right: 10, bottom: 50, left: 60 });
+            var color = d3.scaleOrdinal()
+              .domain(['m', 'f'])
+              .range(['#f5d6b0', '#619ba5'])
+            // 3. Create a SVG we will use to make our chart.
+            // See https://developer.mozilla.org/en-US/docs/Web/SVG for more on SVGs.
+            const svg = d3.create('svg')
+              .attr('width', width)
+              .attr('height', height);
 
-        svgPos.selectAll("rect")
-            .data(dataPos.flat())
-            .join("rect")
-            .transition().duration(1000)
-            .attr("fill", d => colorPos(d.gender))
-            .attr("x", d => xScale(d.start))
-            .attr("y", d => y(d.position))
-            .attr("width", d => xScale(d.end) - xScale(d.start))
-            .attr("height", y.bandwidth())
-      }
-      function updateDataLine(){
-          let oldChild = null
-        if(document.getElementById("chart") !== null){
-          oldChild = document.getElementById("chart").lastElementChild;
-        }
-          const height = 400;
-        const width = 500;
-        const margin = ({top: 10, right: 10, bottom: 50, left: 60});
-        var color = d3.scaleOrdinal()
-        .domain(['m','f'])
-        .range(['#f5d6b0','#619ba5'])
-        // 3. Create a SVG we will use to make our chart.
-        // See https://developer.mozilla.org/en-US/docs/Web/SVG for more on SVGs.
-        const svg = d3.create('svg')
-          .attr('width', width)
-          .attr('height', height);
+            // 4. Setting up scales.
+            const xScale = d3.scaleBand()
+              .domain([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+              .range([margin.left, width - margin.right])
+              .padding([0.2])
+            // .nice();
 
-        // 4. Setting up scales.
-        const xScale = d3.scaleBand()
-          .domain([1,2,3,4,5,6,7,8,9,10])
-          .range([margin.left, width - margin.right])
-          .padding([0.2])
-         // .nice();
+            var xSubgroup = d3.scaleBand()
+              .domain(['m', 'f'])
+              .range([0, xScale.bandwidth()])
+              .padding([0.05])
 
-         var xSubgroup = d3.scaleBand()
-            .domain(['m', 'f'])
-          .range([0, xScale.bandwidth()])
-          .padding([0.05])
-
-        const yScale = d3.scaleLinear()
-          .domain([0, 100])
-          .range([height - margin.bottom, margin.top])
-          .nice();
-       
-
-        svg.append('g')
-        .attr('transform', "translate(" + margin.left + "," + margin.top + ")")
-        
-         
-        //6. Drawing our x-axis
-        svg.append('g')
-        .attr('transform', `translate(0, ${height - margin.bottom})`)
-        .call(d3.axisBottom(xScale).tickSize(0))
+            const yScale = d3.scaleLinear()
+              .domain([0, 100])
+              .range([height - margin.bottom, margin.top])
+              .nice();
 
 
-        // //7. Drawing our y-axis
-        svg.append('g')
-          .attr('transform', `translate(${margin.left}, 0)`)
-          .call(d3.axisLeft(yScale).tickFormat(d => d + "%"))
-        
-        svg.append("text")             
-        .attr("transform",
-              "translate(" + (width/2) + " ," + 
-                            (height + margin.top -20) + ")")
-        .style("text-anchor", "middle")
-        .text("Position in Credits");
-        
-        var tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0)
+            svg.append('g')
+              .attr('transform', "translate(" + margin.left + "," + margin.top + ")")
 
 
-        svg.append("g")
-          .selectAll("g")
-          .data(data_line)
-          .enter()
-          .append("g")
-          .attr("transform", function(d) { return "translate(" + xScale(d.position) + ",0)"; })
-          .selectAll("rect")
-          .data(function(d) {
-            a = [{key: 'm', value: d.male_lines_avg}, {key:'f', value:d.female_lines_avg}]
-             return a})
-           .enter().append("rect")
-            .attr("x", function(d) { return xSubgroup(d.key); })
-            .attr("y", function(d) { return yScale(d.value); })
-             .attr("width", xSubgroup.bandwidth())
-            .attr("height", function(d) { return height - margin.bottom- yScale(d.value); })
-            .attr("fill", function(d) { return color(d.key); })
-            .on("mouseover", function(event, d){
+            //6. Drawing our x-axis
+            svg.append('g')
+              .attr('transform', `translate(0, ${height - margin.bottom})`)
+              .call(d3.axisBottom(xScale).tickSize(0))
+
+
+            // //7. Drawing our y-axis
+            svg.append('g')
+              .attr('transform', `translate(${margin.left}, 0)`)
+              .call(d3.axisLeft(yScale).tickFormat(d => d + "%"))
+
+            svg.append("text")
+              .attr("transform",
+                "translate(" + (width / 2) + " ," +
+                (height + margin.top - 20) + ")")
+              .style("text-anchor", "middle")
+              .text("Position in Credits");
+
+            var tooltip = d3.select("body").append("div")
+              .attr("class", "tooltip")
+              .style("opacity", 0)
+
+
+            svg.append("g")
+              .selectAll("g")
+              .data(data_line)
+              .enter()
+              .append("g")
+              .attr("transform", function (d) { return "translate(" + xScale(d.position) + ",0)"; })
+              .selectAll("rect")
+              .data(function (d) {
+                a = [{ key: 'm', value: d.male_lines_avg }, { key: 'f', value: d.female_lines_avg }]
+                return a
+              })
+              .enter().append("rect")
+              .attr("x", function (d) { return xSubgroup(d.key); })
+              .attr("y", function (d) { return yScale(d.value); })
+              .attr("width", xSubgroup.bandwidth())
+              .attr("height", function (d) { return height - margin.bottom - yScale(d.value); })
+              .attr("fill", function (d) { return color(d.key); })
+              .on("mouseover", function (event, d) {
                 tooltip.transition()
-                .duration(200)
-                .style("opacity", .9)
-                tooltip.html(function(){
-                  if(d.key === 'm'){
-                    return "Male lines: " + parseInt(d.value) +"%"
-                  }else{
-                    return "Female lines: " + parseInt(d.value)+"%"
+                  .duration(200)
+                  .style("opacity", .9)
+                tooltip.html(function () {
+                  if (d.key === 'm') {
+                    return "Male lines: " + parseInt(d.value) + "%"
+                  } else {
+                    return "Female lines: " + parseInt(d.value) + "%"
                   }
                 })
                   .style("left", (event.pageX) + "px")
                   .style("top", (event.pageY - 28) + "px");
-             })
-            .on("mouseout", function(event, d) {
+              })
+              .on("mouseout", function (event, d) {
                 tooltip.transition()
-                .duration(500)
-                .style("opacity", 0);
-            })
+                  .duration(500)
+                  .style("opacity", 0);
+              })
 
-            if(oldChild === null){
-          document.getElementById("chart").appendChild(svg.node());
-        }else{
-          document.getElementById("chart").replaceChild(svg.node(), oldChild);
-        }
-        }
-    
-
+            if (oldChild === null) {
+              document.getElementById("chart").appendChild(svg.node());
+            } else {
+              document.getElementById("chart").replaceChild(svg.node(), oldChild);
+            }
+          }
 
 
+
+
+        });
+      });
     });
-  });
-});
-   
-</script>
+
+  </script>
 </body>
 
 <!-- This adapted from Arvind's observable from lecture. https://observablehq.com/d/4c93c3a516d35624 -->
 <!-- Great D3 intro resource: https://observablehq.com/@d3/learn-d3?collection=@d3/learn-d3 -->
+
 </html>

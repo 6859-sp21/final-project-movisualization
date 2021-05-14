@@ -56,7 +56,9 @@ h1{
   hideAll();
   showLines();
   window.addEventListener('storage', function(e) {  
-    showMovie();
+    if(e.key == "movie"){
+      showMovie();
+    }
   });  
 
 

@@ -117,3 +117,20 @@ span.dot{
   flex-direction: column;
 }
  
+/*credit*/
+.credit-container{
+display: flex;
+flex-direction: row;
+justify-content: space-around;
+
+}
+
+.credit-graph-subcontainer{
+  display: flex;
+flex-direction: column;
+}
+
+.credit-graph-subcontainer-2{
+  display: flex;
+flex-direction: column;
+}

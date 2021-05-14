@@ -126,6 +126,13 @@
         document.getElementById("comedy").onclick = function(){selectGenre("comedy")};
         document.getElementById("romance").onclick = function(){selectGenre("romance")};
         document.getElementById("all").onclick = function(){selectGenre("all")};
+
+        window.addEventListener('storage', function(e) {  
+            if(e.key == "genreCredits"){
+              selectGenre(sessionStorage["genreCredits"]);
+            }
+          }); 
+
         function selectGenre(g){
           document.getElementById("action").classList.remove("active");
           document.getElementById("adventure").classList.remove("active");
@@ -134,7 +141,7 @@
           document.getElementById("romance").classList.remove("active");
           document.getElementById("all").classList.remove("active");
           document.getElementById(g).classList.toggle("active");
-
+          sessionStorage["genreLine"] = g;
           if(g == "all"){
             data = all_data
           }else{
@@ -237,7 +244,7 @@
                   return - d.idx * 2 * d.radius - d.radius; })
               .attr("r", 0)
               .on("click", function(d){
-                localStorage["movie"] = d.target.__data__.name
+                sessionStorage["movie"] = d.target.__data__.name
               })
               .on("mouseover", tooltipOn)
               .on("mouseout", tooltipOff)
@@ -284,7 +291,7 @@
               .attr("r", 0)
             .merge(dots)
             .on("click", function(d){
-                localStorage["movie"] = d.target.__data__.name
+                sessionStorage["movie"] = d.target.__data__.name
               })
               .on("mouseover", tooltipOn)
               .on("mouseout", tooltipOff)
@@ -330,8 +337,11 @@
         .style("font-size", "15")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x).tickFormat(d => d + "%"));
+        
 
-        update();
+          update();
+
+        
         // updateDataPos();
         doneLoading();
    

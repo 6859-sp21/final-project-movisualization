@@ -23,7 +23,7 @@
             d.M_Percent = +d.Percent_Male*-100;
         })
         window.addEventListener('storage', function(e) {  
-          document.getElementById("movie").innerHTML = localStorage["movie"]
+          document.getElementById("movie").innerHTML = sessionStorage["movie"]
          
           //update
           update();
@@ -33,7 +33,7 @@
           if(document.getElementById("chart") !== null){
             oldChild = document.getElementById("chart").lastElementChild;
           }
-          var movie = localStorage["movie"]
+          var movie = sessionStorage["movie"]
           // console.log(movie)
 
           data_by_movie = allData.filter(d => {
