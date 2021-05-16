@@ -1,4 +1,4 @@
-,Movie_id,Title,Year,Rating,Votes,Genres
+,movie_id,title,year,rating,votes,genres
 0,m0,10 Things I Hate About You,1999,6.9,62847.0,['comedy' 'romance']
 1,m1,1492: Conquest Of Paradise,1992,6.2,10421.0,['adventure' 'biography' 'drama' 'history']
 2,m2,15 Minutes,2001,6.1,25854.0,['action' 'crime' 'drama' 'thriller']
