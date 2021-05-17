@@ -6,14 +6,27 @@
   </head>
   <body>
     <h1 id="movie">Movie</h1>
-    <p style="width: 700px">Each Conversation Breakdown by Percentage of Male and Female lines. Hover over bars to see specific percentages and the conversation ID.</p>
+            
     <div class="movie-container">
-      <div class="movie-graph-subcontainer">
-        <div id="chart" style="width:1000px;height:620px;"></div>
+      <div class="movie-graph-subcontainer1">
+        <p style="width: 700px">Each Conversation Breakdown by Percentage of Male and Female lines. Hover over bars to see specific percentages and the conversation ID.</p>
+        <div style="font-weight: 400; display:flex">
+          <span class="dot" style="background-color:#619ba5; "></span>
+          <span style="margin-top: 7;">Female</span>
+          <span class="dot" style="background-color:#f5d6b0;"> </span>
+          <span style="margin-top: 7;">Male</span>
+        </div>
+        <div id="chart" style="width:1000px;height:620px;float:left"></div>
       </div>
+      
+      <div class="movie-graph-subcontainer">
+        <div id='rating' style='width:400px;height:500px;float:left;'></div>
+      </div>
+      
 
       <div class="movie-graph-subcontainer2">
-        <div id='rating' style='width:450px;height:450px'></div>
+        <p id="year" style='font-size:1.5em'>Year</p>
+        <p id='genres' style='font-size:1.5em'>Genres</p>
       </div>
 
     </div>
@@ -50,6 +63,7 @@
         //////////////////
         function update(){
           d3.selectAll('svg').remove();
+
           let oldChild = null
           if(document.getElementById("chart") !== null){
             oldChild = document.getElementById("chart").lastElementChild;
@@ -76,9 +90,17 @@
           for (i=0; i<data_by_movie.length; i++){
             data_by_movie[i].position = i
           }
+          //Year info
+          document.getElementById("year").innerHTML = 'Year: ' + movie_info[0].Year
+
+          // Genre info
+          var genres_list = movie_info[0].Genres.slice(2, -2).split("' '");
+          var genres_str = genres_list.join(', ')
+        document.getElementById("genres").innerHTML = 'Genre: '+genres_str
+
 
           var height = 300,
-          width = 800;
+          width =900;
           var margin = ({top: 10, right: 10, bottom: 60, left: 60});
           var color = d3.scaleOrdinal()
               .domain(['m','f'])
@@ -137,17 +159,10 @@
           svg.append("text")             
             .attr("transform",
                   "translate(" + (width/2) + " ," + 
-                                (height + margin.top + 20) + ")")
+                                (height-10) + ")")
             .style("text-anchor", "middle")
             .text("Movie Conversations");
 
-          // MOVIE INFO
-          svg.append("text")
-            .attr("transform",
-                  "translate(" + (width/2) + " ," + 
-                                (height + margin.top + 100) + ")")
-            .style("text-anchor", "middle")
-            .text("Genres: " + movie_info[0].Genres);
 
           var tooltip = d3.select("body").append("div")
             .attr("class", "tooltip")
@@ -208,11 +223,11 @@
           ///////////////////
           ///////////////////
 
-          rating_data = [{count:movie_info[0].Rating, color:'#FFD700' },
+          rating_data = [{count:movie_info[0].Rating, color:'#404040' },
                           {count:10.0-movie_info[0].Rating, color:'#D8D8D8'}]
 
-          var height_r = 450;
-          var width_r = 450;
+          var height_r = 300;
+          var width_r = 300;
           var outerRadius = height_r/2 - 30;
           var innerRadius = height_r/3 - 30;
 
@@ -242,14 +257,14 @@
             .enter()
             .append('path')
             .attr('d', arc)
-            .attr('fill', function(d){console.log(d); return(d.data.color)})
+            .attr('fill', function(d){return(d.data.color)})
             // .attr('stroke', 'black')
             .style('stroke-width', '1px')
             .style('opacity', 0.7)
 
             svg_rating.append("text")
               .attr("dy", ".50em")
-              .attr('font-size', '2em')
+              .attr('font-size', '1em')
               .attr('y', -40)
               .style("text-anchor", "middle")
               .text('Rating:');
