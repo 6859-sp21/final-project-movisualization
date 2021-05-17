@@ -18,7 +18,16 @@
     </div>
     <div id="line-graph" class = "line-graph-container">
       <iframe src="dialogue-graph.html" height="650" width="1800"style="border:none; " ></iframe>
+        <h2> Learn more about a movie by clicking a circle in the graph above or by searching below!</h2>
+        <div class="autocomplete" >
+          <input id="myInput" type="text" name="movie" placeholder="Movie" style="width:300px; ">
+          <input id="submit" type="submit">
+          <p id="movie-search" style="margin-left: 20;height: 10;"></p>
+        </div>
+       
     </div>
+    <!--Make sure the form has the autocomplete function switched off:-->
+    
     <div id = "year-graph">
       <iframe src="dialogue-year-graph.html" height="700" width="1030"style="border:none;" ></iframe>
     </div>
@@ -41,18 +50,59 @@ h1{
   font-weight: normal;
   font-size: 50px;
 }
+* { box-sizing: border-box; }
 
-/* .dot{
-    
-    height: 15px;
-    width: 15px;
-    border-radius: 50%;
-    display: inline-block;
-   } */
+.autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+input {
+  border: 1px solid gray;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+}
+input[type=text] {
+  background-color: #f1f1f1;
+  width: 100%;
+}
+input[type=submit] {
+  background-color: #fcf5ef;
+  color:black;
+}
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9;
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: #fcf5ef !important;
+  color: black;
+}
+
    
 </style>
 <script>
-
   hideAll();
   showLines();
   window.addEventListener('storage', function(e) {  
@@ -80,7 +130,7 @@ h1{
   function showMovie(){
    
     document.getElementById("movie-graph").style.display = "flex";
-    document.getElementById("movie-graph").scrollIntoView();
+    document.getElementById("movie-graph").scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
   } 
   function hideAll(){
     document.getElementById("line-graph").style.display = "none"
@@ -92,5 +142,317 @@ h1{
     document.getElementById("credits").classList.remove("active");
     document.getElementById("lines").classList.remove("active");
   }
+
+  function autocomplete(inp, arr) {
+  /*the autocomplete function takes two arguments,
+  the text field element and an array of possible autocompleted values:*/
+  var currentFocus;
+  /*execute a function when someone writes in the text field:*/
+  inp.addEventListener("input", function(e) {
+      var a, b, i, val = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      /*create a DIV element that will contain the items (values):*/
+      a = document.createElement("DIV");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      /*append the DIV element as a child of the autocomplete container:*/
+      this.parentNode.appendChild(a);
+      /*for each item in the array...*/
+      for (i = 0; i < arr.length; i++) {
+        /*check if the item starts with the same letters as the text field value:*/
+        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+          /*create a DIV element for each matching element:*/
+          b = document.createElement("DIV");
+          /*make the matching letters bold:*/
+          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+          b.innerHTML += arr[i].substr(val.length);
+          /*insert a input field that will hold the current array item's value:*/
+          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+          /*execute a function when someone clicks on the item value (DIV element):*/
+              b.addEventListener("click", function(e) {
+              /*insert the value for the autocomplete text field:*/
+              inp.value = this.getElementsByTagName("input")[0].value;
+              /*close the list of autocompleted values,
+              (or any other open lists of autocompleted values:*/
+              closeAllLists();
+          });
+          a.appendChild(b);
+        }
+      }
+  });
+  /*execute a function presses a key on the keyboard:*/
+  inp.addEventListener("keydown", function(e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
+        /*If the arrow DOWN key is pressed,
+        increase the currentFocus variable:*/
+        currentFocus++;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 38) { //up
+        /*If the arrow UP key is pressed,
+        decrease the currentFocus variable:*/
+        currentFocus--;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 13) {
+        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+        e.preventDefault();
+        if (currentFocus > -1) {
+          /*and simulate a click on the "active" item:*/
+          if (x) x[currentFocus].click();
+        }
+      }
+  });
+  function addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+  function closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+      x[i].parentNode.removeChild(x[i]);
+    }
+  }
+}
+/*execute a function when someone clicks in the document:*/
+document.addEventListener("click", function (e) {
+    closeAllLists(e.target);
+});
+}
+var movies = ['10 Things I Hate About You', '1492: Conquest Of Paradise',
+       '15 Minutes', '2001: A Space Odyssey', '48 Hrs.',
+       'The Fifth Element', '8Mm',
+       'A Nightmare On Elm Street 4: The Dream Master',
+       'A Nightmare On Elm Street: The Dream Child',
+       'The Atomic Submarine', 'Affliction', 'Air Force One',
+       'Airplane Ii: The Sequel', 'Airplane!', 'Alien Nation', 'Aliens',
+       'Amadeus', 'An American Werewolf In London', 'American Madness',
+       'American Outlaws', 'American Psycho', 'Antitrust',
+       'Austin Powers: International Man Of Mystery', 'The Avengers',
+       'Bachelor Party', 'Backdraft', 'Bad Lieutenant', 'Bamboozled',
+       'Barry Lyndon', 'Basic', 'Big Fish', 'Birthday Girl',
+       'Black Snake Moan', 'Black Rain', 'Blade Runner',
+       'Blast From The Past', 'Blue Velvet', 'The Boondock Saints',
+       'Bottle Rocket', 'The Bourne Supremacy', 'Braveheart',
+       'The Butterfly Effect', 'Casablanca', 'Cast Away',
+       'The Cider House Rules', 'Confidence', 'Croupier', 'Dark Star',
+       'Dark Angel', 'Detroit Rock City', 'Donnie Darko',
+       'Drop Dead Gorgeous', 'Duck Soup', 'The Elephant Man',
+       'Erik The Viking', 'Eternal Sunshine Of The Spotless Mind',
+       'Even Cowgirls Get The Blues', 'Event Horizon', 'Fantastic Four',
+       'Fast Times At Ridgemont High', 'Fear And Loathing In Las Vegas',
+       'Feast', 'Frances', 'Frankenstein', 'Friday The 13Th',
+       'From Dusk Till Dawn', 'G.I. Jane', 'Godzilla', 'Galaxy Quest',
+       'George Washington', 'Get Shorty', 'Ghost Ship', 'Ghost World',
+       'The Ghost And The Darkness', 'Ghostbusters Ii', 'Ghostbusters',
+       'Gladiator', 'The Graduate', 'Grand Hotel', 'The Grifters',
+       'Halloween H20: 20 Years Later',
+       'Halloween: The Curse Of Michael Myers',
+       'Happy Birthday Wanda June', 'Hardcore', 'Harold And Maude',
+       'Hellbound: Hellraiser Ii', 'Hellboy', 'Hellraiser',
+       'High Fidelity', 'Highlander', 'His Girl Friday', 'Hope And Glory',
+       'House Of 1000 Corpses', 'Human Nature', 'The Hustler',
+       'I Am Legend', 'Invaders From Mars', 'Independence Day',
+       'Indiana Jones And The Last Crusade',
+       'Indiana Jones And The Temple Of Doom', 'Innerspace',
+       'The Insider', 'Intolerable Cruelty', 'It Happened One Night',
+       'Jfk', 'Jackie Brown', "Jacob'S Ladder", 'Jason X', 'Jaws', 'Juno',
+       'Kalifornia', 'Kids', 'Knight Moves', 'Krull', 'L\xef\xbf\xbdOn',
+       'Labor Of Love', 'Leaving Las Vegas', 'Legally Blonde', 'Legend',
+       'Life As A House', 'The Life Of David Gale', 'Little Nicky',
+       "Logan'S Run", 'Lost Highway', 'Lost Horizon', 'Men In Black',
+       'Minority Report', 'Made', 'Malcolm X', 'Man On Fire', 'Marty',
+       'Mash', 'Meet John Doe', 'Metro', 'Metropolis',
+       'Mighty Morphin Power Rangers', 'Mobsters', 'Monkeybone',
+       "My Mother Dreams The Satan'S Disciples In New York",
+       'Mr. Smith Goes To Washington', 'Mr. Deeds Goes To Town',
+       'Mumford', 'The Mummy', 'Mystery Men', 'Napoleon', 'Next Friday',
+       'Nick Of Time', 'The Night Of The Hunter',
+       'A Nightmare On Elm Street', 'Ninotchka', 'Nixon',
+       'No Country For Old Men', 'Nurse Betty',
+       'O Brother Where Art Thou?', 'An Officer And A Gentleman',
+       'Panic Room', 'Panther', 'The Patriot', 'Pet Sematary',
+       'Pirates Of The Caribbean', 'Plastic Man', 'Platinum Blonde',
+       'Pleasantville', 'Punch-Drunk Love', 'Quills', 'Rko 281',
+       'Raging Bull', 'Rear Window', 'Rebel Without A Cause',
+       'Reindeer Games', 'Reservoir Dogs', 'Roughshod', 'Scary Movie 2',
+       'Serial Mom', 'The Seventh Victim', 'Sex Lies And Videotape',
+       'Shivers', 'Shock Treatment', 'Sideways', 'Signs', 'Silverado',
+       'Simone', 'The Sixth Sense', 'Slash', 'Slither',
+       'Smokey And The Bandit', "Smokin' Aces", 'Solaris',
+       'Someone To Watch Over Me', 'Spider-Man', 'Stalag 17',
+       'Star Trek: Generations', 'Star Trek Iii: The Search For Spock',
+       'Star Trek: The Wrath Of Khan', 'Star Trek Iv: The Voyage Home',
+       'Star Trek: Insurrection', 'Star Trek: First Contact',
+       'Star Trek Vi: The Undiscovered Country', 'Star Trek: Nemesis',
+       'Starman', 'Strange Days', 'Suspect Zero', 'Swingers',
+       'The Godfather', 'The Talented Mr. Ripley', 'Taxi Driver',
+       'The Rock', 'The Majestic', 'The Birds', 'The Body Snatcher',
+       'The Crow: Salvation', 'The Day The Earth Stood Still',
+       'The Lost Boys', 'The Thing', 'The Time Machine', 'The Jacket',
+       'Thelma & Louise', "There'S Something About Mary", 'Thirteen Days',
+       'Thunderheart', 'Top Gun', 'Total Recall', 'Tremors',
+       'True Believer', 'Twin Peaks: Fire Walk With Me', 'The Verdict',
+       'The War Of The Worlds', 'New Nightmare', 'White Squall',
+       'Wild At Heart', 'Wonder Boys', 'The Woodsman', 'The Abyss',
+       "L'Avventura", 'Agnes Of God', "A Hard Day'S Night", 'Alien',
+       'Alien Vs. Predator', 'All About Eve', "All The President'S Men",
+       'American Pie', 'An American Werewolf In Paris', 'Anastasia',
+       'Annie Hall', 'The Anniversary Party', 'Antz', 'The Apartment',
+       'Apocalypse Now', 'Arctic Blue', 'As Good As It Gets', 'Assassins',
+       'Asylum', 'A Walk To Remember', 'Back To The Future', 'Badlands',
+       'The Adventures Of Buckaroo Banzai Across The 8Th Dimension',
+       'Barton Fink', 'Basic Instinct', 'Basquiat', 'Batman Returns',
+       'Batman And Robin', 'Batman Forever', 'Batman', 'Bean',
+       'Beavis And Butt-Head Do America', 'Beetle Juice', 'Being There',
+       'Being John Malkovich', 'Beloved', 'The Big Lebowski',
+       'The Black Dahlia', 'Blade Ii', 'Blade',
+       'Book Of Shadows: Blair Witch 2', 'Blood Simple.', 'Bloodmoon',
+       'Blow', 'La Battaglia Di Algeri', 'Body Of Evidence',
+       'The Bridges Of Madison County', 'Bones', 'Bound',
+       'The Bourne Identity', 'Brazil', 'Bringing Out The Dead',
+       'Broadcast News', 'A Bucket Of Blood', 'Buffy The Vampire Slayer',
+       'Bull Durham', 'Casino', 'Catwoman', 'Cellular', 'The Crying Game',
+       'Charade', 'Cherry Falls', 'Chill Factor', 'Chinatown',
+       'Nuovo Cinema Paradiso', 'Citizen Kane', 'Clerks.', 'Cliffhanger',
+       'A Clockwork Orange', 'Collateral', 'Conspiracy Theory', 'Contact',
+       'Cool Hand Luke', 'Copycat', 'Crash', 'Crazy Love', 'Crime Spree',
+       'Crouching Tiger Hidden Dragon', 'The Crow', 'Cruel Intentions',
+       'The Curse Of The Cat People', 'The Curse', 'Dark City', 'Dave',
+       'Day Of The Dead', 'Dead Poets Society', 'Deep Rising',
+       'The Deer Hunter', 'Demolition Man',
+       'The Devil And Daniel Webster', 'Die Hard', 'Dog Day Afternoon',
+       'Domino', 'Do The Right Thing',
+       'Dumb And Dumberer: When Harry Met Lloyd', 'Dune', 'Ed Wood',
+       'Edtv', 'Election', 'L.A. Confidential', 'Enemy Of The State',
+       'The English Patient', 'Entrapment', 'Erin Brockovich',
+       'Star Wars: The Empire Strikes Back',
+       'Escape From The Planet Of The Apes', 'Escape From L.A.',
+       'Excalibur', 'The Exorcist', 'The Fabulous Baker Boys', 'Face/Off',
+       'The Family Man', 'The Fantastic Four', 'Fantastic Voyage',
+       'Fargo', 'Fight Club', 'Final Destination 2', 'Final Destination',
+       'Rambo: First Blood Part Ii', 'The Fisher King',
+       'Five Easy Pieces', 'Five Feet High And Rising', 'Fletch',
+       'The Adventures Of Ford Fairlane', 'The French Connection',
+       'Frequency', 'Friday The 13Th Part Iii',
+       'Jason Lives: Friday The 13Th Part Vi',
+       'Jason Goes To Hell: The Final Friday',
+       'Friday The 13Th Part Viii: Jason Takes Manhattan', 'Game 6',
+       'Gandhi', 'Gattaca', 'The Getaway', 'Get Carter',
+       'Glengarry Glen Ross', 'The Godfather: Part Ii',
+       'Gods And Monsters', 'Gone In Sixty Seconds', 'Goodfellas',
+       'Good Will Hunting', 'The Grapes Of Wrath', 'Grosse Pointe Blank',
+       'The Horse Whisperer', 'Hackers',
+       'Halloween 4: The Return Of Michael Myers', 'Halloween',
+       'Hannah And Her Sisters', 'Hannibal', 'Happy Campers', 'Heathers',
+       'Heavenly Creatures', 'Hellraiser: Hellseeker', 'Hero',
+       'Hider In The House', 'Highlander Iii: The Sorcerer', 'Hostage',
+       'Hotel Rwanda', 'House On Haunted Hill', 'House Of The Damned',
+       'Hellraiser Iii: Hell On Earth', 'Hudson Hawk',
+       'The Hudsucker Proxy', 'I Walked With A Zombie', 'The Ice Storm',
+       'Insomnia', 'Interview With The Vampire: The Vampire Chronicles',
+       'I Still Know What You Did Last Summer', 'Isle Of The Dead',
+       "It'S A Wonderful Life", 'Jaws 2', 'Jaws 3-D', 'Jaws: The Revenge',
+       'The Jazz Singer', 'Jennifer Eight', 'Jerry Maguire',
+       'Jurassic Park Iii', 'The Lost World: Jurassic Park',
+       'Jurassic Park', 'Freddy Vs. Jason', 'Kafka', 'King Kong', 'Klute',
+       'Kramer Vs. Kramer', 'Kundun', 'Lake Placid',
+       'The Silence Of The Lambs', 'Last Of The Mohicans', 'Leviathan',
+       'Lock Stock And Two Smoking Barrels', 'Lone Star',
+       'Lord Of Illusions', 'Lost In Translation', 'Lost Souls',
+       'Love & Basketball', 'Magnolia', 'The Man In The Iron Mask',
+       'Manhunt', 'Manhunter', 'Man On The Moon', 'The Matrix',
+       'Halloween Iii: Season Of The Witch', 'Meet Joe Black', 'Memento',
+       'Miami Vice', 'Midnight Cowboy', 'Midnight Express', 'Mimic',
+       'Misery', 'Mission: Impossible Ii', 'Mission: Impossible',
+       'Moonstruck', 'Monty Python And The Holy Grail', 'Mrs Brown',
+       'Arcade', 'Mulholland Dr.', 'Nan', 'My Girl 2', 'My Girl',
+       "My Best Friend'S Wedding", 'Nashville', 'Natural Born Killers',
+       'Nothing But A Man', 'The Negotiator', 'Neuromancer',
+       'Never Been Kissed', 'The Nightmare Before Christmas',
+       "A Nightmare On Elm Street Part 2: Freddy'S Revenge",
+       'A Nightmare On Elm Street 3: Dream Warriors', 'Notting Hill',
+       "One Flew Over The Cuckoo'S Nest", 'Only You', 'On The Waterfront',
+       'Orgy Of The Dead', 'Out Of Sight', 'Pearl Harbor',
+       'Peggy Sue Got Married', 'Pet Sematary Ii', 'Philadelphia',
+       'Pitch Black', 'Planet Of The Apes', 'Platoon', 'Playback',
+       "The Ploughman'S Lunch", 'Point Break', 'Predator', 'Pretty Woman',
+       'The Princess Bride', 'The Producers', 'Psycho', 'Maniac',
+       'Vampyr', 'Mystery Of The Wax Museum', 'Quantum Project',
+       'Rambling Rose', 'Red White Black & Blue',
+       'Star Wars: Episode Vi - Return Of The Jedi',
+       'The Rocky Horror Picture Show', 'Rocky',
+       'Who Framed Roger Rabbit', 'Romeo And Juliet', 'Ronin', 'Route 9',
+       'Rush Hour 2', 'Rush Hour', 'Runaway Bride',
+       'Sleepless In Seattle', 'Salt Of The Earth', 'The Salton Sea',
+       'Saving Private Ryan', 'Say Anything...', "Schindler'S List",
+       'Scream 2', 'Scream 3', 'Scream', 'Seven', 'The Searchers',
+       'Seven Days To Live', 'Shakespeare In Love', 'Shallow Grave',
+       'Shampoo', 'The Shining', 'Silver Bullet', 'Sister Act',
+       'Sleepy Hollow', 'Sling Blade', 'Smoke', 'Snow Falling On Cedars',
+       'Soldier', 'Some Like It Hot', 'The Wedding Date', 'Sounder',
+       'South Park: Bigger Longer & Uncut', 'Spacejacked', 'Spare Me',
+       'Sphere', 'Star Wars', 'Starship Troopers',
+       'Star Trek: The Motion Picture', 'State And Main', 'Stepmom',
+       'Storytelling', 'Stranglehold',
+       'Dr. Strangelove Or: How I Learned To Stop Worrying And Love The Bomb',
+       'Suburbia', 'Sugar & Spice', 'Sunset Blvd.', 'Supergirl',
+       'Superman Iii', 'Superman Ii', 'Superman Iv: The Quest For Peace',
+       'Superman', 'The Sweet Hereafter', 'Sweet Smell Of Success',
+       'Terminator 2: Judgment Day', 'Taking Sides', 'The Terminator',
+       'The Game', 'The Haunting', 'The Limey',
+       "The Man Who Wasn'T There", 'The Relic', 'The Truman Show',
+       'The X Files', 'The Cell', 'The Third Man', 'The Beach',
+       'The Believer', 'Le Grand Bleu', 'The Hebrew Hammer',
+       'The Leopard Man', 'The Lost Son', 'The Messenger', 'The Pianist',
+       'The Piano', 'The Sting', 'The Thin Man', 'Three Kings',
+       'Thx 1138', 'Ticker', 'Trouble In Paradise', 'Titanic',
+       'Transatlantic Merry-Go-Round', 'Tombstone', 'Tomorrow Never Dies',
+       'To Sleep With Anger', 'Toy Story', 'The Magic Toyshop', 'Traffic',
+       'Trainspotting', 'Star Trek V: The Final Frontier', 'Tron',
+       'True Lies', 'True Romance', 'Twelve Monkeys', 'U-Turn', 'U Turn',
+       'Unbreakable', 'Unforgiven', 'The Usual Suspects', 'Verdict',
+       'Vertigo', 'Very Bad Things', 'Viridiana', 'Virtuosity',
+       'Wag The Dog', 'Wall Street', 'Waxwork', 'What Lies Beneath',
+       'What Women Want', 'The Witching Hour', 'White Angel',
+       "Who'S Your Daddy?", 'Wild Things', 'Wild Wild West', 'Willow',
+       'Witness', 'The Wizard Of Oz', 'The World Is Not Enough',
+       'Watchmen', 'Xxx', 'X-Men', 'Young Frankenstein', 'Zulu Dawn']
+autocomplete(document.getElementById("myInput"), movies);
+document.getElementById("submit").onclick = function(){
+  var m = (document.getElementById("myInput").value)
+  if (!movies.includes(m)){
+    document.getElementById("movie-search").innerHTML = "Oh no this movie does not exist!"
+    setTimeout(function(){document.getElementById("movie-search").innerHTML =""}, 3000)
+  } else{
+    sessionStorage["movie"] = m;
+    showMovie();
+  }
+
+}
+
+ 
+
+
 </script>
 </html>
