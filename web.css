@@ -75,7 +75,7 @@ div.tabs{
   width: 25%;
   border: 2px solid gray;
   background-color: rgb(231, 231, 231);
-
+  font-family: Avenir Next;
 
   cursor: pointer;
   border-radius: 4px;
@@ -116,6 +116,8 @@ span.dot{
   display:flex;
   flex-direction: column;
 }
+
+
  
 /*credit*/
 .credit-container{
