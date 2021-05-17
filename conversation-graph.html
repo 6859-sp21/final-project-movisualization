@@ -13,7 +13,7 @@
       </div>
 
       <div class="movie-graph-subcontainer2">
-        <div id='rating' style='width:400px;height:400px'></div>
+        <div id='rating' style='width:450px;height:450px'></div>
       </div>
 
     </div>
@@ -43,13 +43,13 @@
 
         window.addEventListener('storage', function(e) {  
           document.getElementById("movie").innerHTML = sessionStorage["movie"]
-          //update
           update();
         });   
 
 
         //////////////////
         function update(){
+          d3.selectAll('svg').remove();
           let oldChild = null
           if(document.getElementById("chart") !== null){
             oldChild = document.getElementById("chart").lastElementChild;
@@ -202,65 +202,79 @@
           }else{
             document.getElementById("chart").replaceChild(svg.node(), oldChild);
           }
+          
+          ///////////////////
+          ///////////////////
+          ///////////////////
+          ///////////////////
 
+          rating_data = [{count:movie_info[0].Rating, color:'#FFD700' },
+                          {count:10.0-movie_info[0].Rating, color:'#D8D8D8'}]
 
-
-      /////////////////////////////////////////////
-
-          // Ratings chart
-          let oldChildRating = null
-          if(document.getElementById("rating") !== null){
-            oldChildRating = document.getElementById("rating").lastElementChild;
-          }
-          rating_data = [{count:movie_info.Rating, color:'#ffd700' },
-                          {count:10.0-movie_info.Rating, color:'#ffffff'}]
-
-          var height = 400;
-          var width = 400;
-          var outerRadius = height/2;
-          var innerRadius = height/3;
-          var totalCount = 10.0;
-          var margin = ({top: 10, right: 10, bottom: 60, left: 60});
+          var height_r = 450;
+          var width_r = 450;
+          var outerRadius = height_r/2 - 30;
+          var innerRadius = height_r/3 - 30;
 
           var pie = d3.pie()
             .sort(null)
             .value(function(d) {
-                return d.count;
+                return +d.count;
             });
           var arc = d3.arc()
 						.innerRadius(innerRadius)
 						.outerRadius(outerRadius);
-          
-          const svg_rating = d3.select('body')
-                .append('svg')
-                .attr('width', width)
-                .attr('height', height)
-                .append('g')
-                // .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");;
 
+          
+           
+          const svg_rating = d3.select('#rating')
+                .append('svg')
+                .attr('width', width_r)
+                .attr('height', height_r)
+                .append('g')
+                .attr("transform", "translate(" + width_r / 2 + "," + height_r / 2 + ")");;
+            
+            
+                     
           svg_rating.selectAll('g')
             .data(pie(rating_data))
-            .join("g")
+            // .join("g")
             .enter()
             .append('path')
             .attr('d', arc)
-            .attr('fill', function(d){return(d.color)})
-            .attr('stroke', 'black')
-            .style('stroke-width', '2px')
+            .attr('fill', function(d){console.log(d); return(d.data.color)})
+            // .attr('stroke', 'black')
+            .style('stroke-width', '1px')
             .style('opacity', 0.7)
 
-          console.log(svg_rating)
-          document.getElementById("rating").appendChild(svg_rating.node());
+            svg_rating.append("text")
+              .attr("dy", ".50em")
+              .attr('font-size', '2em')
+              .attr('y', -40)
+              .style("text-anchor", "middle")
+              .text('Rating:');
 
-          if(oldChildRating === null){
-            document.getElementById("rating").appendChild(svg_rating.node());
-          }else{
-            document.getElementById("rating").replaceChild(svg_rating.node(), oldChildRating);
-          }
+            svg_rating.append("text")
+              .attr("dy", ".50em")
+              .attr('font-size', '3em')
+              // .attr('y', 0)
+              .style("text-anchor", "middle")
+              .text(movie_info[0].Rating);        
+
+          
+
+          // document.getElementById("rating").appendChild(svg_rating.node());
+
+          // if(oldChildRating === null){
+          //   //document.getElementById("rating").appendChild(svg_rating.node());
+          // }else{
+          //   document.getElementById("rating").replaceChild(svg_rating.node(), oldChildRating);
+          // }
           };
         
     });
   });
+
     </script>
 </body>
 </html>
