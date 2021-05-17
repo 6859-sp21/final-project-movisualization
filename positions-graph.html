@@ -14,7 +14,14 @@
         high - 8 being low). This visualization portrays the percentage of female/male actors at each credit's position.
         Hover, on the bars to see the specific percentages and toggle through the genres to see more detailed
         breakdowns.</p>
-      <div class="tabs" id="tabs" style="margin: auto;">
+      <button type="button" class="collapsible"> Read More ></button>
+      <div class = "content">
+        <a style="display: block" href="https://www.wrapbook.com/blog/essential-guide-sag-rates#toc-the-sag-aftra-commercial-rates-of-2021">SAG-AFTRA Rates 2021</a>
+        <a style="display: block" href="https://www.studiobinder.com/blog/film-budget-planning-how-to-effectively-budget-a-script-breakdown/#film-budget-breakdown">Budgeting a Script Breakdown</a>
+        <a style="display: block" href="https://www.productionhub.com/blog/post/the-anatomy-of-a-call-sheet-how-to-make-a-call-sheet-for-film-and-tv">Anatomy of a Call sheet</a>
+        <a style="display: block" href="https://www.spotlight.com/news-and-advice/read-a-call-sheet/">How to Read a Call Sheet</a>            
+      </div>
+      <div class="tabs" id="tabs" style="margin: auto; margin-top: 10px;">
         <button class="tablinks" id="adventure">Adventure</button>
         <button class="tablinks" id="action">Action</button>
         <button class="tablinks" id="drama">Drama</button>
@@ -53,9 +60,46 @@
         transform: rotate(360deg);
       }
     }
+    .collapsible {
+      background-color: white;
+      color: #777;
+      cursor: pointer;
+      padding: 8px;
+      width: 110px;
+      border: none;
+      text-align: left;
+      outline: none;
+      font-size: 15px;
+      }
+
+    .active, .collapsible:hover {
+      text-decoration: underline;
+    }
+
+    .content {
+      padding: 0 18px;
+      display: none;
+      overflow: hidden;
+      background-color: white;
+    }
   </style>
 
   <script>
+    let coll = document.getElementsByClassName("collapsible");
+    let i;
+
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        let content = this.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
+        }
+      });
+    }
+
     function doneLoading() {
       document.getElementById("loader1").style.display = "none";
       document.getElementById("loader2").style.display = "none";
