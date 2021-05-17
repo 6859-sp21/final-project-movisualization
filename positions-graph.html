@@ -235,7 +235,7 @@
             .attr('height', heightPos);
 
           // Setting up scales for xAxis and yAxis
-          const xScale = d3.scaleLinear()
+          const xScalePos = d3.scaleLinear()
             .domain([-0.5, 0.5])
             .range([marginPos.left, widthPos - marginPos.right]);
 
@@ -253,9 +253,9 @@
             .selectAll("rect")
             .data(d => d.map(v => Object.assign(v, { key: d.position })))
             .join("rect")
-            .attr("x", d => xScale(d.start))
+            .attr("x", d => xScalePos(d.start))
             .attr("y", d => y(d.position))
-            .attr("width", d => xScale(d.end) - xScale(d.start))
+            .attr("width", d => xScalePos(d.end) - xScalePos(d.start))
             .attr("height", y.bandwidth())
             .on("mouseover", function (event, d) {
               tooltip.transition()
@@ -284,7 +284,7 @@
           //Drawing our x-axis
           xAxis = svgPos.append('g')
             .attr('transform', `translate(0, ${marginPos.top})`)
-            .call(d3.axisTop(xScale).tickSize(0).tickFormat(d => {
+            .call(d3.axisTop(xScalePos).tickSize(0).tickFormat(d => {
               if (d * 100 == 0) {
                 return "50%";
               }
@@ -293,20 +293,107 @@
 
           // Drawing our y-axis
           yAxis = svgPos.append('g')
-            .attr('transform', `translate(${xScale(0)}, 0)`)
+            .attr('transform', `translate(${xScalePos(0)}, 0)`)
             .call(d3.axisLeft(y))
             .call(g => g.selectAll(".tick")
               .data(dataPos[0])
-              .attr('transform', d => `translate(${xScale(-1.08)},${y(d.position) + y.bandwidth() / 2})`))
+              .attr('transform', d => `translate(${xScalePos(-1.08)},${y(d.position) + y.bandwidth() / 2})`))
 
           document.getElementById("chart2").appendChild(svgPos.node());
-          updateDataLine();
-      
           
+          // INITIAL GRAPH SET UP 
+          // GRAPH: AVG LINES BY GENDER FOR EACH CREDIT's POSITION
+          const height = 400;
+          const width = 500;
+          const margin = ({ top: 10, right: 10, bottom: 50, left: 60 });
+          var color = d3.scaleOrdinal()
+            .domain(['m', 'f'])
+            .range(['#f5d6b0', '#619ba5'])
+          // 3. Create a SVG we will use to make our chart.
+          // See https://developer.mozilla.org/en-US/docs/Web/SVG for more on SVGs.
+          const svg = d3.create('svg')
+            .attr('width', width)
+            .attr('height', height);
+
+          // 4. Setting up scales.
+          const xScale = d3.scaleBand()
+            .domain([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+            .range([margin.left, width - margin.right])
+            .padding([0.2])
+          // .nice();
+
+          var xSubgroup = d3.scaleBand()
+            .domain(['m', 'f'])
+            .range([0, xScale.bandwidth()])
+            .padding([0.05])
+
+          const yScale = d3.scaleLinear()
+            .domain([0, 40])
+            .range([height - margin.bottom, margin.top])
+            .nice();
+
+
+          svg.append('g')
+            .attr('transform', "translate(" + margin.left + "," + margin.top + ")")
+
+
+          //6. Drawing our x-axis
+          svg.append('g')
+            .attr('transform', `translate(0, ${height - margin.bottom})`)
+            .call(d3.axisBottom(xScale).tickSize(0))
+
+
+          // //7. Drawing our y-axis
+          svg.append('g')
+            .attr('transform', `translate(${margin.left}, 0)`)
+            .call(d3.axisLeft(yScale).tickFormat(d => d + "%"))
+
+          svg.append("text")
+            .attr("transform",
+              "translate(" + (width / 2) + " ," +
+              (height + margin.top - 20) + ")")
+            .style("text-anchor", "middle")
+            .text("Position in Credits");
+
+          svg.append("g")
+            .selectAll("g")
+            .data(data_line)
+            .enter()
+            .append("g")
+            .attr("transform", function (d) { return "translate(" + xScale(d.position) + ",0)"; })
+            .selectAll("rect")
+            .data(function (d) {
+              a = [{ key: 'm', value: d.male_lines_avg }, { key: 'f', value: d.female_lines_avg }]
+              return a
+            })
+            .enter().append("rect")
+            .attr("x", function (d) { return xSubgroup(d.key); })
+            .attr("y", function (d) { return yScale(d.value); })
+            .attr("width", xSubgroup.bandwidth())
+            .attr("height", function (d) { return height - margin.bottom - yScale(d.value); })
+            .attr("fill", function (d) { return color(d.key); })
+            .on("mouseover", function (event, d) {
+              tooltip.transition()
+                .duration(200)
+                .style("opacity", .9)
+              tooltip.html(function () {
+                if (d.key === 'm') {
+                  return "Male lines: " + parseInt(d.value) + "%"
+                } else {
+                  return "Female lines: " + parseInt(d.value) + "%"
+                }
+              })
+                .style("left", (event.pageX) + "px")
+                .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function (event, d) {
+              tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+            })
+      
+          document.getElementById("chart").appendChild(svg.node());
           doneLoading();
-
-
-
 
           function updatePosition() {
             // format data for positions graph 
@@ -361,120 +448,27 @@
               .join("rect")
               .transition().duration(1000)
               .attr("fill", d => colorPos(d.gender))
-              .attr("x", d => xScale(d.start))
+              .attr("x", d => xScalePos(d.start))
               .attr("y", d => y(d.position))
-              .attr("width", d => xScale(d.end) - xScale(d.start))
+              .attr("width", d => xScalePos(d.end) - xScalePos(d.start))
               .attr("height", y.bandwidth())
           }
           function updateDataLine() {
-            let oldChild = null
-            if (document.getElementById("chart") !== null) {
-              oldChild = document.getElementById("chart").lastElementChild;
-            }
-            const height = 400;
-            const width = 500;
-            const margin = ({ top: 10, right: 10, bottom: 50, left: 60 });
-            var color = d3.scaleOrdinal()
-              .domain(['m', 'f'])
-              .range(['#f5d6b0', '#619ba5'])
-            // 3. Create a SVG we will use to make our chart.
-            // See https://developer.mozilla.org/en-US/docs/Web/SVG for more on SVGs.
-            const svg = d3.create('svg')
-              .attr('width', width)
-              .attr('height', height);
+            let dl = data_line.map(d=>{
+              a = [{ key: 'm', value: d.male_lines_avg }, { key: 'f', value: d.female_lines_avg }]
+              return a
+            })
 
-            // 4. Setting up scales.
-            const xScale = d3.scaleBand()
-              .domain([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-              .range([margin.left, width - margin.right])
-              .padding([0.2])
-            // .nice();
-
-            var xSubgroup = d3.scaleBand()
-              .domain(['m', 'f'])
-              .range([0, xScale.bandwidth()])
-              .padding([0.05])
-
-            const yScale = d3.scaleLinear()
-              .domain([0, 40])
-              .range([height - margin.bottom, margin.top])
-              .nice();
-
-
-            svg.append('g')
-              .attr('transform', "translate(" + margin.left + "," + margin.top + ")")
-
-
-            //6. Drawing our x-axis
-            svg.append('g')
-              .attr('transform', `translate(0, ${height - margin.bottom})`)
-              .call(d3.axisBottom(xScale).tickSize(0))
-
-
-            // //7. Drawing our y-axis
-            svg.append('g')
-              .attr('transform', `translate(${margin.left}, 0)`)
-              .call(d3.axisLeft(yScale).tickFormat(d => d + "%"))
-
-            svg.append("text")
-              .attr("transform",
-                "translate(" + (width / 2) + " ," +
-                (height + margin.top - 20) + ")")
-              .style("text-anchor", "middle")
-              .text("Position in Credits");
-
-            var tooltip = d3.select("body").append("div")
-              .attr("class", "tooltip")
-              .style("opacity", 0)
-
-
-            svg.append("g")
-              .selectAll("g")
-              .data(data_line)
-              .enter()
-              .append("g")
-              .attr("transform", function (d) { return "translate(" + xScale(d.position) + ",0)"; })
-              .selectAll("rect")
-              .data(function (d) {
-                a = [{ key: 'm', value: d.male_lines_avg }, { key: 'f', value: d.female_lines_avg }]
-                return a
-              })
-              .enter().append("rect")
+            svg.selectAll("rect")
+              .data(dl.flat())
+              .join("rect")
+              .transition().duration(1000)
               .attr("x", function (d) { return xSubgroup(d.key); })
               .attr("y", function (d) { return yScale(d.value); })
               .attr("width", xSubgroup.bandwidth())
               .attr("height", function (d) { return height - margin.bottom - yScale(d.value); })
               .attr("fill", function (d) { return color(d.key); })
-              .on("mouseover", function (event, d) {
-                tooltip.transition()
-                  .duration(200)
-                  .style("opacity", .9)
-                tooltip.html(function () {
-                  if (d.key === 'm') {
-                    return "Male lines: " + parseInt(d.value) + "%"
-                  } else {
-                    return "Female lines: " + parseInt(d.value) + "%"
-                  }
-                })
-                  .style("left", (event.pageX) + "px")
-                  .style("top", (event.pageY - 28) + "px");
-              })
-              .on("mouseout", function (event, d) {
-                tooltip.transition()
-                  .duration(500)
-                  .style("opacity", 0);
-              })
-
-            if (oldChild === null) {
-              document.getElementById("chart").appendChild(svg.node());
-            } else {
-              document.getElementById("chart").replaceChild(svg.node(), oldChild);
-            }
           }
-
-
-
-
         });
       });
     });
