@@ -7,12 +7,22 @@
   <body>
     <h1 id="movie">Movie</h1>
     <p style="width: 700px">Each Conversation Breakdown by Percentage of Male and Female lines. Hover over bars to see specific percentages and the conversation ID.</p>
-    <div id="chart" style="width:1000px;height:620px;">
+    <div class="movie-container">
+      <div class="movie-graph-subcontainer">
+        <div id="chart" style="width:1000px;height:620px;"></div>
+      </div>
+
+      <div class="movie-graph-subcontainer2">
+        <div id='rating' style='width:400px;height:400px'></div>
+      </div>
+
     </div>
+
     <style>
     </style>
 
     <script>
+    d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movieMetadata) =>{
     d3.csv("data_cleaned_merged/conversation_gender_splits.csv").then((allData) => {
         allData.forEach(function(d){
             d.Movie = d.Title
@@ -22,21 +32,35 @@
             d.F_Percent = +d.Percent_Female*100
             d.M_Percent = +d.Percent_Male*-100;
         })
+        movieMetadata.forEach(function(d){
+          d.Movie = d.title
+          d.id = +d.movie_id.substring(1)
+          d.Genres = d.genres
+          d.Year = +d.year
+          d.Rating = +d.rating
+          d.Votes = +d.votes;
+        })
+
         window.addEventListener('storage', function(e) {  
           document.getElementById("movie").innerHTML = sessionStorage["movie"]
-         
           //update
           update();
         });   
+
+
+        //////////////////
         function update(){
           let oldChild = null
           if(document.getElementById("chart") !== null){
             oldChild = document.getElementById("chart").lastElementChild;
           }
           var movie = sessionStorage["movie"]
-          // console.log(movie)
-
           data_by_movie = allData.filter(d => {
+            if (d.Movie == movie){
+              return d;
+            }
+          })
+          movie_info = movieMetadata.filter(d => {
             if (d.Movie == movie){
               return d;
             }
@@ -49,19 +73,13 @@
               d.F_Percent = +d.Percent_Female*100
               d.M_Percent = +d.Percent_Male*100;
           })
-
           for (i=0; i<data_by_movie.length; i++){
             data_by_movie[i].position = i
           }
-          
 
-  
-          // var fMax = Math.max(20, d3.max(data_by_movie, function(d){return d.F_Percent}));
-          // var mMax = Math.max(20, d3.max(data_by_movie, function(d){return d.M_Percent}));
-
-          const height = 300;
-          const width = 800;;
-          const margin = ({top: 10, right: 10, bottom: 60, left: 60});
+          var height = 300,
+          width = 800;
+          var margin = ({top: 10, right: 10, bottom: 60, left: 60});
           var color = d3.scaleOrdinal()
               .domain(['m','f'])
               .range(['#f5d6b0','#619ba5'])
@@ -90,22 +108,6 @@
             .domain([0,100])
             .range([(height - margin.bottom)/2, height - margin.bottom])
             .nice();
-
-          
-          // const yScaleFA = d3.scaleLinear()
-          //   .domain([0, 100])
-          //   .range([height - margin.bottom, margin.top])
-          //   .nice();
-
-          // const yScaleMA = d3.scaleLinear()
-          //   .domain([0,100])
-          //   .range([(height - margin.bottom), height*2 - margin.bottom])
-          //   .nice();
-
-          // Drawing x-axis
-          // svg.append('g')
-          // .attr('transform', `translate(0, ${height - margin.bottom})`)
-          // .tickValues([])
 
           // Drawing y-axis
           svg.append('g')
@@ -138,6 +140,14 @@
                                 (height + margin.top + 20) + ")")
             .style("text-anchor", "middle")
             .text("Movie Conversations");
+
+          // MOVIE INFO
+          svg.append("text")
+            .attr("transform",
+                  "translate(" + (width/2) + " ," + 
+                                (height + margin.top + 100) + ")")
+            .style("text-anchor", "middle")
+            .text("Genres: " + movie_info[0].Genres);
 
           var tooltip = d3.select("body").append("div")
             .attr("class", "tooltip")
@@ -187,14 +197,70 @@
               })
           document.getElementById("chart").appendChild(svg.node());
 
-        if(oldChild === null){
-          document.getElementById("chart").appendChild(svg.node());
-        }else{
-          document.getElementById("chart").replaceChild(svg.node(), oldChild);
-        }
-        };
+          if(oldChild === null){
+            document.getElementById("chart").appendChild(svg.node());
+          }else{
+            document.getElementById("chart").replaceChild(svg.node(), oldChild);
+          }
+
+
+
+      /////////////////////////////////////////////
+
+          // Ratings chart
+          let oldChildRating = null
+          if(document.getElementById("rating") !== null){
+            oldChildRating = document.getElementById("rating").lastElementChild;
+          }
+          rating_data = [{count:movie_info.Rating, color:'#ffd700' },
+                          {count:10.0-movie_info.Rating, color:'#ffffff'}]
+
+          var height = 400;
+          var width = 400;
+          var outerRadius = height/2;
+          var innerRadius = height/3;
+          var totalCount = 10.0;
+          var margin = ({top: 10, right: 10, bottom: 60, left: 60});
+
+          var pie = d3.pie()
+            .sort(null)
+            .value(function(d) {
+                return d.count;
+            });
+          var arc = d3.arc()
+						.innerRadius(innerRadius)
+						.outerRadius(outerRadius);
+          
+          const svg_rating = d3.select('body')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .append('g')
+                // .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");;
+
+          svg_rating.selectAll('g')
+            .data(pie(rating_data))
+            .join("g")
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', function(d){return(d.color)})
+            .attr('stroke', 'black')
+            .style('stroke-width', '2px')
+            .style('opacity', 0.7)
+
+          console.log(svg_rating)
+          document.getElementById("rating").appendChild(svg_rating.node());
+
+          if(oldChildRating === null){
+            document.getElementById("rating").appendChild(svg_rating.node());
+          }else{
+            document.getElementById("rating").replaceChild(svg_rating.node(), oldChildRating);
+          }
+          };
         
     });
+  });
     </script>
 </body>
 </html>
