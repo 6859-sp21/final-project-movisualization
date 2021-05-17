@@ -20,6 +20,8 @@
         <button class="tablinks" id="drama">Drama</button>
         <button class="tablinks" id="comedy">Comedy</button>
         <button class="tablinks" id="romance">Romance</button>
+
+        <button class="tablinks" id ="thriller">Thriller</button>
         <button class="tablinks" id="all">All Genres</button>
         <div style="font-weight: 400; display:flex">
           <span class="dot" style="background-color:#619ba5; "></span>
@@ -120,6 +122,7 @@
           document.getElementById("drama").onclick = function () { selectGenre("drama") };
           document.getElementById("comedy").onclick = function () { selectGenre("comedy") };
           document.getElementById("romance").onclick = function () { selectGenre("romance") };
+          document.getElementById("thriller").onclick = function(){selectGenre("thriller")};
           document.getElementById("all").onclick = function () { selectGenre("all") };
           window.addEventListener('storage', function(e) {  
             if(e.key == "genreLine"){
@@ -133,6 +136,7 @@
             document.getElementById("comedy").classList.remove("active");
             document.getElementById("romance").classList.remove("active");
             document.getElementById("all").classList.remove("active");
+            document.getElementById("thriller").classList.remove("active");
             document.getElementById(g).classList.toggle("active");
             sessionStorage["genreCredits"] = g;
             if (g == "all") {
