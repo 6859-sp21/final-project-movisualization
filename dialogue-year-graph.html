@@ -2,6 +2,8 @@
   <head>
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+
     <link rel="stylesheet" href="web.css">
     <h2> Average yearly distribution of females lines and male lines</h2>
     <p style="width: 700px">See how the gender breakdown in movies has changed over the years. Hit play/pause to start/stop the animation. Use the scroller to manually go to a year.</p>
@@ -13,12 +15,6 @@
     <output for="slider" id="year" >1935</output> 
         
     <input type="range" name="slider" id="slider" min="1935" max="2010" value="1935" style="width: 1000px;" step="5" class="slider"/>
-    <div style="font-weight: 400; display:flex" >
-      <span class="dot" style = "background-color:#619ba5; "></span>
-      <span style="margin-top: 7;">Female</span>
-      <span class="dot" style = "background-color:#f5d6b0;">  </span> 
-      <span style="margin-top: 7;">Male</span>
-    </div>
     <style>
     </style>
 
@@ -30,21 +26,20 @@
           currentVal =  document.getElementById('slider').value
           document.getElementById('slider').value = parseInt(currentVal)+5;
           document.getElementById("year").value =  document.getElementById('slider').value;
-          t = update_year(parseInt(document.getElementById('slider').value))
-          data_m = t[0]
-          data_f = t[1]
+          var year = parseInt(document.getElementById('slider').value)
+          t = update_year(year)
+         
           // console.log(t)
-          update(data_m, data_f)          
+          update(t, year)          
         }
         d3.select("#slider").on("input", function (d) {
           selectedValue = this.value;
           document.getElementById("year").value = selectedValue;
           currYear = this.value;
           t = update_year(this.value)
-          data_m = t[0]
-          data_f = t[1]
+
           // console.log(t)
-          update(data_m, data_f)          
+          update(t, this.value)          
         })
 
         var pauseButton = document.getElementById('play-button');
@@ -65,9 +60,9 @@
 	          else{ playSlider(); }
         })
         //set margin, width height
-        const margin = {top: 10, right: 10, bottom: 30, left: 30},
-        width = 1000 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        const margin = {top: 10, right: 10, bottom: 30, left: 50},
+        width = 1300 - margin.left - margin.right,
+        height = 700 - margin.top - margin.bottom;
 
         var parseTime = d3.timeParse("%Y");
         
@@ -112,7 +107,7 @@
 
         //bin year by 5 by 5 
         const xBin = d3.scaleLinear()
-          .domain([1931, 2010])
+          .domain([1934, 2010])
           .range([margin.left, width - margin.right])
           .nice();
         var bin = d3.bin()
@@ -130,7 +125,8 @@
             sum+= v.value
             count+=1
           })
-          data_m.push({year: parseTime(parseInt(d.x0+ (d.x1-d.x0)/2)), value: sum/count})
+        
+          data_m.push({year: parseTime(parseInt(d.x1)), value: sum/count})
         })
         data_f = []
         data_f_unbinned.forEach(function(d){
@@ -140,16 +136,30 @@
             sum+= v.value
             count+=1
           })
-          data_f.push({year: parseTime(parseInt(d.x0+ (d.x1-d.x0)/2)), value: sum/count})
+          data_f.push({year: parseTime(parseInt(d.x1)), value: sum/count})
         })
 
+        data_diff = []
+        for(let i = 0; i < data_f.length;i++){
+          data_diff.push({year: data_f[i].year, value: (data_f[i].value - data_m[i].value)})
+        }
+        console.log(data_diff)
         const data_male = data_m
         const data_female = data_f
-        
+        const data_difference = data_diff
         function update_year(year){
           numPoints = ((year-1935)/5)+1
-          return [data_male.slice(0, numPoints), data_female.slice(0, numPoints)]
+          console.log(numPoints)
+          console.log(data_difference.slice(0, numPoints))
+          // return [data_male.slice(0, numPoints), data_female.slice(0, numPoints)]
+          return data_difference.slice(0, numPoints)
         }
+
+        const tooltip = d3.select("body")
+          .append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
         //create svg
         const svg = d3.select("body")
         .append("svg")
@@ -161,47 +171,81 @@
 
         //setting x scale
         const xScale = d3.scaleTime()
-          .domain([parseTime(1931), parseTime(2010)])
+          .domain([parseTime(1930), parseTime(2020)])
           .range([margin.left, width - margin.right])
-          .nice();
+          //.nice();
     
     
         //setting y scale
         const yScale = d3.scaleLinear()
-          .domain([0, 100])
+          .domain([-100, 0])
           .range([height - margin.bottom, margin.top])
           .nice();
+
+        //graphs annotations
+        const annotations = [{}, 
+        {},
+          {note:{label:"Rise of populatity of the woman's film genre during WW2 ", title: "1939-1945"}, x:xScale(parseTime(1942)), y: 10, dx: 0, dy: height-300},
+          {note:{label:"End of silent films, very few women are included behind the sets of talkies", title: "1950s"}, x:xScale(parseTime(1950)), y: 10, dx: 0, dy: height-100},
+          {},
+          {note:{label:"Start of the women's liberation movement", title: "1960s"}, x:xScale(parseTime(1960)), y: 10, dx: 0, dy: height-250},
+          {},
+          {},
+          {note:{label:"Women In Film Founded", title: "1973"}, x:xScale(parseTime(1973)), y: 10, dx: 0, dy: height-80},
+          {},
+          {note:{label:"Barbra Streisand is the first woman to win the Golden Globe for directing", title: "1984"}, x:xScale(parseTime(1984)), y: 10, dx: 0, dy: height-250},
+          {},
+          {note:{label:"Jeanne Campion is the first woman to win a Palme d'Or at the Cannes Film Festival", title: "1993"}, x:xScale(parseTime(1993)), y: 10, dx: 0, dy: height-100}, 
+          {},
+          {note:{label:" Martha Coolidge is elected as the first female president of the Director Guild of America Awards", title: "2003"}, x:xScale(parseTime(2003)), y: 10, dx: 0, dy: height-300}, 
+          {note:{label:"Kathryn Bigelow was the first woman to win an Academy Award for Best Director", title: "2009"}, x:xScale(parseTime(2009)), y: 10, dx: 0, dy: height-100}]
+          
 
         //adding x and y axis
         svg.append('g')
           .attr('transform', `translate(${margin.left}, 0)`)
           .call(d3.axisLeft(yScale).tickFormat(d => d + "%"))
+      
+          svg.append("text")             
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - 10)
+            .attr("x", 0 - (height / 2))
+            .style("text-anchor", "middle")
+            .text("Male lines - Female line distribution");
 
         svg.append('g')
-        .attr('transform', `translate(0, ${height - margin.bottom})`)
-        .call(d3.axisBottom(xScale).ticks(15))
+        .attr('transform', `translate(0, ${margin.top})`)
+        .call(d3.axisBottom(xScale).tickValues([parseTime(1935), parseTime(1940), parseTime(1945), parseTime(1950), parseTime(1955), parseTime(1960), parseTime(1965), parseTime(1970), parseTime(1975), parseTime(1980), parseTime(1985), parseTime(1990), parseTime(1995), parseTime(2000), parseTime(2005), parseTime(2010), parseTime(2015)]))
 
         svg.append("text")             
             .attr("transform",
                   "translate(" + (width/2) + " ," + 
-                                (height + margin.top + 20) + ")")
+                                (0) + ")")
             .style("text-anchor", "middle")
             .text("Year");
 
-        //colors
-        var color_m = '#f5d6b0'
-        var color_f = '#619ba5'
 
-        function update(data_m, data_f){
+        function update(data_d, year){
           // console.log(data_m)
           // console.log(data_f)
            // create line for male 
+        console.log(data_d)
         svg.selectAll("circle").remove()
         svg.selectAll("path").remove()
+        svg.selectAll("g").remove()
+         //adding x and y axis
+         svg.append('g')
+          .attr('transform', `translate(${margin.left}, 0)`)
+         .call(d3.axisLeft(yScale).tickFormat(d => d + "%"))
+
+        svg.append('g')
+        .attr('transform', `translate(0, ${margin.top})`)
+       .call(d3.axisBottom(xScale).tickValues([parseTime(1935), parseTime(1940), parseTime(1945), parseTime(1950), parseTime(1955), parseTime(1960), parseTime(1965), parseTime(1970), parseTime(1975), parseTime(1980), parseTime(1985), parseTime(1990), parseTime(1995), parseTime(2000), parseTime(2005), parseTime(2010), parseTime(2015)]))
+
         svg.append("path")
-          .datum(data_m)
+          .datum(data_d)
           .attr("fill", "none")
-          .attr("stroke", "#f5d6b0")
+          .attr("stroke", '#dd8c28')
           .attr("stroke-width", 1.5)
           .attr("d", d3.line()
             .x(function(d) { return xScale(d.year) })
@@ -211,47 +255,54 @@
           svg
           .append("g")
           .selectAll("dot")
-          .data(data_m)
+          .data(data_d)
           .enter()
          .append("circle")
             .attr("cx", function(d) { return xScale(d.year) } )
             .attr("cy", function(d) { return yScale(d.value) } )
             .attr("r", 5)
-            .attr("fill", "#f5d6b0")
+            .attr("fill", '#dd8c28')
+            .on("mouseover", function (event, d) {
+              tooltip.transition()
+                .duration(200)
+                .style("opacity", .9)
+              tooltip.html(function () {
+                return `Year: ${d.year.getFullYear()}<br/> Difference in lines: ${parseInt(d.value)}%`
+                
+              })
+                .style("left", (event.pageX) + "px")
+                .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function (event, d) {
+              tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+            })
+        var ann_update = []
+        for(let i = 0; i < ((year-1935)/5)+1; i++){
+          if(annotations[i]!= {}){
+            ann_update.push(annotations[i])
+          }
+        }
+        makeAnnotation = d3.annotation().annotations(ann_update)
         
-        // create line for female
-        svg.append("path")
-          .datum(data_f)
-          .attr("fill", "none")
-          .attr("stroke", "#619ba5")
-          .attr("stroke-width", 1.5)
-          .attr("d", d3.line()
-            .x(function(d) { return xScale(d.year) })
-            .y(function(d) { return yScale(d.value) })
-          )
-        
-        //create dots for female
-        svg
-          .append("g")
-          .selectAll("dot")
-          .data(data_f)
-          .enter()
-         .append("circle")
-            .attr("cx", function(d) { return xScale(d.year) } )
-            .attr("cy", function(d) { return yScale(d.value) } )
-            .attr("r", 5)
-            .attr("fill", "#619ba5")
-        
+        svg.append("g")
+        .attr('class', 'annotation-group')
+        .call(makeAnnotation)
+        svg.selectAll(".connector").style("opacity", 0.4).style("stroke-dasharray", ("3, 3"))
+        d3.select('.annotation-group')
+    
+
 
         }
-        t = update_year(1935)
-        data_m = t[0]
-        data_f = t[1]
+        data_d = update_year(1935)
+        // data_m = t[0]
+        // data_f = t[1]
         // create line for male 
         svg.append("path")
-          .datum(data_m)
+          .datum(data_d)
           .attr("fill", "none")
-          .attr("stroke", "#f5d6b0")
+          .attr("stroke", '#dd8c28')
           .attr("stroke-width", 1.5)
           .attr("d", d3.line()
             .x(function(d) { return xScale(d.year) })
@@ -261,37 +312,34 @@
           svg
           .append("g")
           .selectAll("dot")
-          .data(data_m)
+          .data(data_d)
           .enter()
          .append("circle")
             .attr("cx", function(d) { return xScale(d.year) } )
             .attr("cy", function(d) { return yScale(d.value) } )
             .attr("r", 5)
-            .attr("fill", "#f5d6b0")
+            .attr("fill", '#dd8c28')
+            .on("mouseover", function (event, d) {
+              tooltip.transition()
+                .duration(200)
+                .style("opacity", .9)
+              tooltip.html(function () {
+                return `Year: ${d.year.getFullYear()}<br/> Difference in lines: ${parseInt(d.value)}%`
+                
+              })
+                .style("left", (event.pageX) + "px")
+                .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function (event, d) {
+              tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+            })
         
-        // create line for female
-        svg.append("path")
-          .datum(data_f)
-          .attr("fill", "none")
-          .attr("stroke", "#619ba5")
-          .attr("stroke-width", 1.5)
-          .attr("d", d3.line()
-            .x(function(d) { return xScale(d.year) })
-            .y(function(d) { return yScale(d.value) })
-          )
+    
+ 
         
-        //create dots for female
-        svg
-          .append("g")
-          .selectAll("dot")
-          .data(data_f)
-          .enter()
-         .append("circle")
-            .attr("cx", function(d) { return xScale(d.year) } )
-            .attr("cy", function(d) { return yScale(d.value) } )
-            .attr("r", 5)
-            .attr("fill", "#619ba5")
-        
+
 
       });
   });
