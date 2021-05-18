@@ -1,3 +1,5 @@
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
 :root {
     --female_faded: #99d2dc;
     --female: #619ba5; 
@@ -136,3 +138,70 @@ flex-direction: column;
   display: flex;
 flex-direction: column;
 }
+
+/*rating*/
+.general-rating-container{
+  display: flex;
+  flex-direction: row;
+}
+.general-rating-subcontainer{
+  display: flex;
+  flex-direction: column;
+}
+
+.ratings-container{
+  display: flex;
+  flex-direction: column;
+}
+.ratings-subcontainer{
+  display: flex;
+  flex-direction: row;
+}
+.votes-title{
+  font-size: 20px;
+  margin: 0;
+}
+.median-title{
+  font-size: 20px;
+  margin: 0;
+}
+.num{
+  font-size: 3rem;
+  margin: 0;
+}
+
+/*stars*/
+
+.stars{
+  border: none;
+  float: left;
+}
+.stars > input { display: none; } 
+.stars > label:before { 
+  margin: 5px;
+  font-size: 1.25em;
+  font-family: FontAwesome;
+  display: inline-block;
+  content: "\f005";
+}
+
+.stars > .half:before { 
+  content: "\f089";
+  position: absolute;
+}
+
+.stars > label { 
+  color: #ddd; 
+ float: right; 
+}
+
+/***** CSS Magic to Highlight Stars on Hover *****/
+
+.stars > input:checked ~ label, /* show gold star when clicked */
+.stars:not(:checked) > label:hover, /* hover current star */
+.stars:not(:checked) > label:hover ~ label { color: #FFD700;  } /* hover previous stars in list */
+
+.stars > input:checked + label:hover, /* hover current star when changing rating */
+.stars > input:checked ~ label:hover,
+.stars > label:hover ~ input:checked ~ label, /* lighten current selection */
+.stars > input:checked ~ label:hover ~ label { color: #FFED85;  } 
