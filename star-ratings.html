@@ -1,0 +1,278 @@
+<html>
+
+<head>
+  <!-- Load d3.js -->
+  <link rel="stylesheet" href="web.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://d3js.org/d3.v6.js"></script>
+</head>
+
+<body>
+    
+
+
+    <div class = "star-container">
+      <p>Rate this movie and see how you compare to others!</p>
+      <div class = "my-rating-container" style = "display: flex; flex-direction: row;">
+      <fieldset class="stars">
+        <input type="radio" id="star10" name="stars" value="10.0" onclick="rate(this.value)"/><label class = "full" for="star10" ></label>
+        <input type="radio" id="star9half" name="stars" value="9.5" onclick="rate(this.value)"/><label class="half" for="star9half" ></label>
+        <input type="radio" id="star9" name="stars" value="9.0" onclick="rate(this.value)"/><label class = "full" for="star9" ></label>
+        <input type="radio" id="star8half" name="stars" value="8.5" onclick="rate(this.value)"/><label class="half" for="star8half" ></label>
+        <input type="radio" id="star8" name="stars" value="8.0" onclick="rate(this.value)"/><label class = "full" for="star8"></label>
+        <input type="radio" id="star7half" name="stars" value="7.5" onclick="rate(this.value)"/><label class="half" for="star7half" ></label>
+        <input type="radio" id="star7" name="stars" value="7.0" onclick="rate(this.value)"/><label class = "full" for="star7" ></label>
+        <input type="radio" id="star6half" name="stars" value="6.5" onclick="rate(this.value)"/><label class="half" for="star6half"></label>
+        <input type="radio" id="star6" name="stars" value="6.0" onclick="rate(this.value)"/><label class = "full" for="star6" ></label>
+        <input type="radio" id="star5half" name="stars" value="5.5" onclick="rate(this.value)"/><label class = "half" for="star5half" ></label>
+        <input type="radio" id="star5" name="stars" value="5.0" onclick="rate(this.value)"/><label class = "full" for="star5" ></label>
+        <input type="radio" id="star4half" name="stars" value="4.5" onclick="rate(this.value)"/><label class="half" for="star4half" ></label>
+        <input type="radio" id="star4" name="stars" value="4.0" onclick="rate(this.value)"/><label class = "full" for="star4" ></label>
+        <input type="radio" id="star3half" name="stars" value="3.5" onclick="rate(this.value)"/><label class="half" for="star3half" ></label>
+        <input type="radio" id="star3" name="stars" value="3.0" onclick="rate(this.value)" /><label class = "full" for="star3"></label>
+        <input type="radio" id="star2half" name="stars" value="2.5" onclick="rate(this.value)"/><label class="half" for="star2half" ></label>
+        <input type="radio" id="star2" name="stars" value="2.0" onclick="rate(this.value)"/><label class = "full" for="star2" ></label>
+        <input type="radio" id="star1half" name="stars" value="1.5" onclick="rate(this.value)"/><label class="half" for="star1half" ></label>
+        <input type="radio" id="star1" name="stars" value="1.0" onclick="rate(this.value)"/><label class = "full" for="star1" ></label>
+        <input type="radio" id="starhalf" name="stars" value="0.5" onclick="rate(this.value)"/><label class="half" for="starhalf"></label>
+        <!-- <input type="button"> Submit </button> -->
+    </fieldset>
+    <p id="your-rating" style="margin-top: 10"> Your Rating: 0.0</p>
+    <button class="submit" id="submit"> Submit </button>
+</div>
+    <div class = "star-all" id="star-all">
+        <div class = "star-all-subcontainer">
+        <div id = "under-18">
+            <p id="under-18-title">  </p>
+            <div id = "under-18-both" style="display:flex; flex-direction: row;"></div>
+            <div id = "under-18-male" style="display:flex; flex-direction: row;"></div>
+            <div id = "under-18-female" style="display:flex; flex-direction: row;"></div>
+        </div>
+        <div id = "30-to-44">
+            <p id="30-to-44-title"> </p>
+            <div id = "30-to-44-both" style="display:flex; flex-direction: row;"></div>
+            <div id = "30-to-44-male" style="display:flex; flex-direction: row;"></div>
+            <div id = "30-to-44-female" style="display:flex; flex-direction: row;"></div>
+        </div>
+        
+    </div>
+    <div class = "star-all-subcontainer">
+        <div id = "18-to-29">
+            <p id="18-to-29-title"></p>
+            <div id = "18-to-29-both" style="display:flex; flex-direction: row;"></div>
+            <div id = "18-to-29-male" style="display:flex; flex-direction: row;"></div>
+            <div id = "18-to-29-female" style="display:flex; flex-direction: row;"></div>
+        </div>
+        
+        <div id = "over-45">
+            <p id="over-45-title"></p>
+            <div id = "over-45-both" style="display:flex; flex-direction: row;"></div>
+            <div id = "over-45-male" style="display:flex; flex-direction: row;"></div>
+            <div id = "over-45-female" style="display:flex; flex-direction: row;"></div>
+        </div>
+    </div>
+    <div class = "star-all-subcontainer">
+        <div id = "all-ages">
+            <p id="all-ages-title">  </p>
+            <div id = "all-ages-both" style="display:flex; flex-direction: row;"></div>
+            <div id = "all-ages-male" style="display:flex; flex-direction: row;"></div>
+            <div id = "all-ages-female" style="display:flex; flex-direction: row;"></div>
+        </div>
+        <p id="compare-rating" style="width: 250"></p>
+    </div>
+    </div>
+
+
+    </div>
+
+  <style>
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    i{
+        margin: 5px;
+        font-size: 1.25em;
+    }
+    .submit{
+        background-color: white;
+        border: 2px solid gray;
+        cursor: pointer;
+        border-radius: 4px;
+        font: 15px Avenir Next;
+        margin-left: 20;
+        margin-right:5;
+        height: 40px;
+        width: 100px;
+    }
+    .submit:hover{
+  background-color:  rgb(189, 188, 188);
+}
+
+
+  </style>
+
+  <script>
+    // function doneLoading() {
+    //   document.getElementById("loader1").style.display = "none";
+    //   document.getElementById("loader2").style.display = "none";
+    // };
+    let my_rating = 0;
+    function rate(value){
+        my_rating = value;
+        document.getElementById("your-rating").innerHTML = "Your Rating: " + value;
+    }  
+
+d3.csv("data_cleaned_merged/imdb.csv").then((movie_data) => {
+    let single_movie = movie_data[0];
+    
+     
+    let average_rating_data = [
+        {
+            value: single_movie["avg_vote"],
+            color: true,
+            text: "Average Rating",
+            votes: single_movie["votes"]
+        }
+    ]
+    let us_rating_data = [
+        {
+            value: single_movie["us_voters_rating"],
+            color: true,
+            text: "Average Rating",
+            votes: single_movie["us_voters_votes"]
+        }
+    ]
+    let non_us_rating_data = [
+        {
+            value: single_movie["non_us_voters_rating"],
+            color: true,
+            text: "Average Rating",
+            votes: single_movie["non_us_voters_votes"]
+        }
+    ]
+
+        
+    let female_faded = "#99d2dc"
+    let female =  "#619ba5" 
+    let male = "#f5d6b0"
+    let male_faded = "#f9e9d9"
+    let both = "#DDDBD0"
+    let both_faded = "#dddbd0bb"     
+
+    function createRating(container, rating, type){
+        document.getElementById(container).innerHTML = ""
+        let sim_rating = parseInt(rating)
+        let half = false
+        let faded = true
+        //between .8 to .0 is upper
+        if(sim_rating+0.8 <= rating){
+            sim_rating++
+            if(sim_rating === parseFloat(my_rating)){
+                faded =  false
+            }
+        //between .3 to .7 is half
+        }else if(sim_rating+0.3 <=rating){
+            half = true
+            if(sim_rating+0.5 === parseFloat(my_rating)){
+                faded =  false
+            }
+        } else{
+            if(sim_rating === parseFloat(my_rating)){
+                faded =  false
+            }
+        }
+        if(type === "male"){
+            color = faded? male_faded: male;
+        } else if (type === "female"){
+            color = faded? female_faded: female;
+        } else{
+            color = faded? both_faded: both;
+        }
+
+        for(let i = 0; i < sim_rating; i++){
+            var star = document.createElement('i');
+            star.className = "fa fa-star";
+            star.style.color = color
+            if(!faded){
+                star.style.fontSize = "20px";
+            }
+            document.getElementById(container).append(star)
+        }
+        if(half){
+            var half_star = document.createElement('i');
+            half_star.className = "fa fa-star-half";
+            half_star.style.color = color
+            if(!faded){
+                star.style.fontSize = "20px";
+            }
+            document.getElementById(container).append(half_star)
+        }
+        var r = document.createElement('p');
+        r.innerHTML = rating
+        r.style.marginLeft = 10;
+        r.style.marginTop = 5;
+        if(!faded){
+            r.style.fontWeight = "bold";
+        }
+        document.getElementById(container).append(r)
+        return !faded;
+    }
+        
+    
+    document.getElementById("submit").onclick =  function(){
+        console.log(my_rating)
+        let same = []
+
+        //all ages
+        document.getElementById("all-ages-title").innerHTML = "All Ages"
+        createRating("all-ages-both", single_movie["avg_vote"], "both")? same.push("all voters"): false
+        createRating("all-ages-male",single_movie["males_allages_avg_vote"], "male")? same.push("all male voters"): false
+        createRating("all-ages-female",single_movie["females_allages_avg_vote"], "female")? same.push("all female voters"): false
+
+        //under 18
+        document.getElementById("under-18-title").innerHTML = "< 18"
+        createRating("under-18-both", single_movie["allgenders_0age_avg_vote"], "both")? same.push("all voters under the age of 18"): false
+        createRating("under-18-male",single_movie["males_0age_avg_vote"], "male")? same.push("all male voters under the age of  18"): false
+        createRating("under-18-female",single_movie["females_0age_avg_vote"], "female")? same.push("all female voters under the age 18"): false
+
+        //18-29
+        document.getElementById("18-to-29-title").innerHTML = "18-29"
+        createRating("18-to-29-both", single_movie["allgenders_18age_avg_vote"], "both")? same.push("all voters between the age of 18-29"): false
+        createRating("18-to-29-male",single_movie["males_18age_avg_vote"], "male")? same.push("all male voters between the age of 18-29"): false
+        createRating("18-to-29-female",single_movie["females_18age_avg_vote"], "female")? same.push("all female voters between the age of 18-29"): false
+
+        //30-45
+        document.getElementById("30-to-44-title").innerHTML = "30-44"
+        createRating("30-to-44-both", single_movie["allgenders_30age_avg_vote"], "both")? same.push("all voters between the age of 30-44"): false
+        createRating("30-to-44-male",single_movie["males_45age_avg_vote"], "male")? same.push("all male voters between the age of 30-44"): false
+        createRating("30-to-44-female",single_movie["females_45age_avg_vote"], "female")? same.push("all female voters between the age of 30-44"): false
+
+        //over 45
+        document.getElementById("over-45-title").innerHTML = "> 45"
+        createRating("over-45-both", single_movie["allgenders_30age_avg_vote"], "both")? same.push("all voters over the age of 45"): false
+        createRating("over-45-male",single_movie["males_30age_avg_vote"], "male")? same.push("all male voters over the age of 45"): false
+        createRating("over-45-female",single_movie["females_30age_avg_vote"], "female")? same.push("all female voters over the age of 45"): false
+
+        let text_same = "Your rating is similar to "
+        if(same.length === 0){
+            text_same+= "no one"
+        }else{
+            text_same+= "the average rating of "
+            for(let i = 0; i < same.length-1; i++){
+                text_same+=same[i]+" and  "
+            }
+            text_same+= same[same.length-1]
+        }
+        document.getElementById("compare-rating").innerHTML = text_same;
+    }
+});
+
+  </script>
+</body>
+</html>
