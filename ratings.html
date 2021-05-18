@@ -21,7 +21,7 @@
         <div class="general-rating-container">
         
         <div id="chart" style="width:400px;height:400px; float:left;"></div>
-        <div class="general-rating-subcontainer">
+        <div class="general-rating-subcontainer" style="margin-left: -60px; margin-right: 100px;">
           <p class="num" id="votes-general"></p>
           <p class="votes-title" ></p>
           <p class="num" id="median"></p>
@@ -36,7 +36,7 @@
 
         <div class="general-rating-container">
         <div id="chart-us" style="width:400px;height:400px;float:left;"></div>
-        <div class="general-rating-subcontainer">
+        <div class="general-rating-subcontainer" style="margin-left: -60px; margin-right: 100px;">
         <p class="num" id="votes-us"><p>
         <p class="votes-title"></p>
         </div>
@@ -47,7 +47,7 @@
 
         <div class="general-rating-container">
         <div id="chart-non-us" style="width:400px;height:400px;float:left;"></div>
-        <div class="general-rating-subcontainer">
+        <div class="general-rating-subcontainer" style="margin-left: -60px; ">
         <p class="num" id="votes-non-us"></p>
         <p class="votes-title"></p>
         </div>
@@ -93,7 +93,7 @@
       document.getElementById("loader2").style.display = "none";
     };
 
-d3.csv("data_cleaned_merged/imdb.csv").then((movie_data) => {
+d3.csv("data_cleaned_merged/imdb_with_metadata.csv").then((movie_data) => {
     let single_movie = movie_data[0];
     
      
@@ -102,7 +102,7 @@ d3.csv("data_cleaned_merged/imdb.csv").then((movie_data) => {
             value: single_movie["avg_vote"],
             color: true,
             text: "Average Rating",
-            votes: single_movie["votes"]
+            votes: single_movie["total_votes"]
         }
     ]
     let us_rating_data = [
@@ -125,7 +125,7 @@ d3.csv("data_cleaned_merged/imdb.csv").then((movie_data) => {
     // GRAPH SET UP 
     // GRAPH: OVERALL RATINGS
     const height = 400;
-    const width = 400;
+    const width = 350;
     const margin = 20;
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
     var radius = 150;
@@ -135,7 +135,7 @@ d3.csv("data_cleaned_merged/imdb.csv").then((movie_data) => {
     var percentageTextSize = '3.0rem';
     var color = d3.scaleOrdinal()
     .domain([true, false])
-    .range(['#dd8c28', 'white'])
+    .range(['#dddbd0', 'white'])
 
     var arc = d3.arc()
         .innerRadius(radius - margin)
@@ -288,9 +288,6 @@ d3.csv("data_cleaned_merged/imdb.csv").then((movie_data) => {
       el.innerHTML = "Votes";
     })
     document.getElementById("median-title").innerHTML = "Median"
-    // doneLoading();
-
-    function updatePosition() {}
 });
 
   </script>
