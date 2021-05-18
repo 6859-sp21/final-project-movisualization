@@ -6,37 +6,64 @@
   </head>
   <body>
     <h1 id="movie">Movie</h1>
-            
-    <div class="movie-container">
-      <div class="movie-graph-subcontainer1">
-        <p style="width: 700px">Each Conversation Breakdown by Percentage of Male and Female lines. Hover over bars to see specific percentages and the conversation ID.</p>
-        <div style="font-weight: 400; display:flex">
-          <span class="dot" style="background-color:#619ba5; "></span>
-          <span style="margin-top: 7;">Female</span>
-          <span class="dot" style="background-color:#f5d6b0;"> </span>
-          <span style="margin-top: 7;">Male</span>
+
+    <p id='genres' style='font-size:1.2em'>Genres</p>
+
+    <div class="movie-container" style="display:flex; flex-direction: row;">
+      
+      <div class="movie-graph-subcontainer-info">
+        <div id='rating' style='width:400px;height:400px;float:left;'></div>
+      </div>
+
+      <div class="movie-graph-subcontainer-pie" style="display:flex; flex-direction: column;">
+        <div id='pie' style='width:400px; float:left'></div>
+        <div style="font-weight: 400;display:flex; flex-direction: column;">
+          <div class="subsubcontainer-labels" style="display:flex; flex-direction: row;">
+            <span class="dot" style="background-color:#619ba5; "></span>
+            <span style="margin-top: 7;">Female & Female</span>
+          </div>
+          <div class="subsubcontainer-labels" style="display:flex; flex-direction: row;">
+            <span class="dot" style="background-color:#f9e9d9;"> </span>
+            <span style="margin-top: 7;">Female & Male</span>
+          </div>
+          <div class="subsubcontainer-labels" style="display:flex; flex-direction: row;">
+            <span class="dot" style="background-color:#f5d6b0;"> </span>
+            <span style="margin-top: 7;">Male & Male</span>
+          </div>
         </div>
-        <div id="chart" style="width:1000px;height:620px;float:left"></div>
-      </div>
-      
-      <div class="movie-graph-subcontainer">
-        <div id='rating' style='width:400px;height:500px;float:left;'></div>
-      </div>
-      
-
-      <div class="movie-graph-subcontainer2">
-        <p id="year" style='font-size:1.5em'>Year</p>
-        <p id='genres' style='font-size:1.5em'>Genres</p>
       </div>
 
+      <div class="movie-graph-subcontainer-chart" style='display: flex; flex-direction: column;'>
+        <p style="width: 700px">Female-to-Male Conversation Breakdowns by Percentage of Male and Female Lines. Hover over bars to see specific percentages and the conversation ID.</p>
+
+        <div id="chart" style="width:700px;height:300px;float:left"></div>
+
+        <div style="font-weight: 400; display:flex">
+          <div class="subsubcontainer-labels" style="display:flex; flex-direction: row;">
+            <span class="dot" style="background-color:#619ba5; "></span>
+            <span style="margin-top: 7;">Female & Female</span>
+          </div>
+          <div class="subsubcontainer-labels" style="display:flex; flex-direction: row;">
+            <span class="dot" style="background-color:#f5d6b0;"> </span>
+            <span style="margin-top: 7;">Male</span>
+          </div>
+        </div>
+
+      </div>
+
+      
     </div>
+
 
     <style>
     </style>
 
     <script>
+      
     d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movieMetadata) =>{
     d3.csv("data_cleaned_merged/conversation_gender_splits.csv").then((allData) => {
+    d3.csv("data_cleaned_merged/conversation_gender_splits_percents.csv").then((pieData) =>{
+    
         allData.forEach(function(d){
             d.Movie = d.Title
             d.id = +d.MovieID.substring(1)
@@ -55,7 +82,7 @@
         })
 
         window.addEventListener('storage', function(e) {  
-          document.getElementById("movie").innerHTML = sessionStorage["movie"]
+          
           update();
         });   
 
@@ -90,8 +117,9 @@
           for (i=0; i<data_by_movie.length; i++){
             data_by_movie[i].position = i
           }
-          //Year info
-          document.getElementById("year").innerHTML = 'Year: ' + movie_info[0].Year
+          // Movie + Year info
+          document.getElementById("movie").innerHTML = sessionStorage["movie"] + ' (' + movie_info[0].Year + ')'
+          // document.getElementById("year").innerHTML = 'Year: ' + movie_info[0].Year
 
           // Genre info
           var genres_list = movie_info[0].Genres.slice(2, -2).split("' '");
@@ -228,8 +256,9 @@
 
           var height_r = 300;
           var width_r = 300;
-          var outerRadius = height_r/2 - 30;
-          var innerRadius = height_r/3 - 30;
+          var outerRadius = 100;
+          var innerRadius = 100-40;
+          
 
           var pie = d3.pie()
             .sort(null)
@@ -240,8 +269,6 @@
 						.innerRadius(innerRadius)
 						.outerRadius(outerRadius);
 
-          
-           
           const svg_rating = d3.select('#rating')
                 .append('svg')
                 .attr('width', width_r)
@@ -264,31 +291,120 @@
 
             svg_rating.append("text")
               .attr("dy", ".50em")
-              .attr('font-size', '1em')
-              .attr('y', -40)
+              .attr('font-size', '1.2em')
+              .attr('y', -outerRadius-25)
               .style("text-anchor", "middle")
-              .text('Rating:');
+              .text('Rating');
 
             svg_rating.append("text")
               .attr("dy", ".50em")
-              .attr('font-size', '3em')
-              // .attr('y', 0)
+              .attr('font-size', '2em')
+              .attr('y', 0)
               .style("text-anchor", "middle")
               .text(movie_info[0].Rating);        
 
-          
+          /////////////////////////////////
+          /////////////////////////////////
+          /////////////////////////////////
+          /////////////////////////////////
+          /////////////////////////////////
 
-          // document.getElementById("rating").appendChild(svg_rating.node());
+          var height = 300;
+          var width = 300;
+          var outerRadius = 100;
+          var innerRadius = 0;
 
-          // if(oldChildRating === null){
-          //   //document.getElementById("rating").appendChild(svg_rating.node());
-          // }else{
-          //   document.getElementById("rating").replaceChild(svg_rating.node(), oldChildRating);
-          // }
+
+          moviePie = pieData.filter(d => {
+            if (d.Title == movie){
+              return d;
+            }})
+          moviePie.forEach(d => function(d){
+            d.ff_percent = +d.ff_percent;
+            d.mf_percent = +d.mf_percent;
+            d.mm_percent = +d.mm_percent;
+          })
+
+
+          pie_data = [{'count':moviePie[0].ff_percent, 'color':'#619ba5', 'key':'ff'},
+                      {'count':moviePie[0].mf_percent, 'color':'#f5d6b0', 'key':'mf'},
+                      {'count':moviePie[0].mm_percent, 'color':'#f9e9d9', 'key':'mm'}]
+          console.log(pie_data)
+
+
+          var pie = d3.pie()
+            .sort(null)
+            .value(function(d) {
+                return +d.count;
+            });
+          var arc = d3.arc()
+						.innerRadius(innerRadius)
+						.outerRadius(outerRadius);
+
+          var tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0)
+            
+
+          const svg_pie = d3.select('#pie')
+                .append('svg')
+                .attr('width', width_r)
+                .attr('height', height_r)
+                .append('g')
+                .attr("transform", "translate(" + width_r / 2 + "," + height_r / 2 + ")");;
+                     
+          svg_pie.selectAll('g')
+            .data(pie(pie_data))
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', function(d){return(d.data.color)})
+            .style('stroke-width', '1px')
+            // .style('opacity', 0.7)
+            .on("mouseover", function(event, d){
+                  tooltip.transition()
+                  .duration(200)
+                  .style("opacity", .9)
+                  tooltip.html(function(){
+                    if(d.data.key === 'mm'){
+                      return "Male to Male Conversations: " + (d.data.count*100).toString().slice(0,5) +"%"
+                    }else if(d.data.key === 'ff'){
+                      return "Female to Female Conversations: " + (d.data.count*100).toString().slice(0,5) +"%"
+                    }else {
+                      return "Female to Male Conversations: " + (d.data.count*100).toString().slice(0,5) +"%"
+                    }
+                  })
+                    .style("left", (event.pageX) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+              })
+              .on("mouseout", function(event, d) {
+                  tooltip.transition()
+                  .duration(500)
+                  .style("opacity", 0);
+              })
+
+            svg_pie.append("text")
+              .attr("dy", ".50em")
+              .attr('font-size', '1.2em')
+              .attr('y',-outerRadius-25)
+              .style("text-anchor", "middle")
+              .text('Conversation Types');
+            // svg_pie.append("text")
+            //   .attr("dy", ".50em")
+            //   .attr('font-size', '1em')
+            //   .attr('y', 0)
+            //   .style("text-anchor", "middle")
+            //   .text('Gender');
+            // svg_pie.append("text")
+            //   .attr("dy", ".50em")
+            //   .attr('font-size', '1em')
+            //   .attr('y', 20)
+            //   .style("text-anchor", "middle")
+            //   .text('Splits');
+    
           };
         
-    });
-  });
+    });});});
 
     </script>
 </body>
