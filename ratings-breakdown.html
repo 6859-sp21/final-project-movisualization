@@ -1,0 +1,104 @@
+<html>
+
+<head>
+  <!-- Load d3.js -->
+  <link rel="stylesheet" href="web.css">
+  <script src="https://d3js.org/d3.v6.js"></script>
+</head>
+
+<body>
+    <div class="ratings-container"> 
+      <h2>Rating Breakdown</h2>
+      <p style="width: 700px">Breakdown of rating of user votes per rating value.</p>   
+      <div id="chart" style="width:400px;height:400px; float:left;"></div>
+    </div>
+  <style>
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+
+  <script>
+    d3.csv("data_cleaned_merged/imdb_with_metadata.csv").then((movie_data) => {
+    let single_movie = movie_data[0];
+    let total_votes = parseInt(single_movie["total_votes"])
+    let data = []
+
+    for(let i = 10; i > 0; i--){
+        let votes = parseInt(single_movie[`votes_${i}`]);
+        let p = (votes/total_votes)*100;
+        data.push({value: i, percent: p, votes: votes})
+    }
+
+    // GRAPH SET UP 
+    // GRAPH: OVERALL RATINGS
+    const height = 400;
+    const width = 500;
+    const margin = ({ top: 10, right: 50, bottom: 50, left: 60 });
+    var color = '#dddbd0';
+        
+    var svg = d3.create('svg')
+        .attr('width', width)
+        .attr('height', height);
+    
+    var y = d3.scaleBand()
+        .domain(d3.range(data.length))
+        .rangeRound([margin.top, height - margin.bottom])
+        .padding(0.1)
+    
+    var x = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.percent)])
+        .range([margin.left, width - margin.right])
+    
+    //6. Drawing our x-axis
+    // var xAxis = svg.append('g')
+    //     .attr("transform", `translate(0,${margin.top})`)
+    //     .call(d3.axisTop(x).ticks(width / 80, data.format))
+    //     .call(g => g.select(".domain").remove())
+
+
+    // //7. Drawing our y-axis
+    var yAxis = svg.append('g')
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).tickFormat(i => data[i].value).tickSizeOuter(0))
+    
+    svg.append("g")
+        .attr("fill", color)
+        .selectAll("rect")
+        .data(data)
+        .join("rect")
+            .attr("x", x(0))
+            .attr("y", (d, i) => y(i))
+            .attr("width", d => x(d.percent) - x(0))
+            .attr("height", y.bandwidth());
+
+    svg.append("g")
+        .attr("fill", "black")
+        .attr("text-anchor", "start")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 12)
+    .selectAll("text")
+    .data(data)
+    .join("text")
+        .attr("x", d => x(d.percent))
+        .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
+        .attr("dy", "0.35em")
+        .attr("dx", +4)
+        .text(d => `${d.percent.toFixed(1)}%`)
+    // .call(text => text.filter(d => x(d.percent) - x(0) < 20) // short bars
+    //     .attr("dx", +4)
+    //     .attr("fill", "black")
+    //     .attr("text-anchor", "start"));
+
+    document.getElementById("chart").appendChild(svg.node());
+});
+
+  </script>
+</body>
+</html>
