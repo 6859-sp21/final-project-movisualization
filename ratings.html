@@ -13,8 +13,11 @@
       <p style="width: 700px">Overall ratings from IMDB of movie.</p>
 
       <div class="loader" id="loader1" style="margin-top: 120;"></div>
-
-      <div id="chart" style="width:420px;height:420px;"></div>
+      <!-- <div style="float: horizontal;"> -->
+        <div id="chart" style="width:400px;height:400px; float:left;"></div>
+        <div id="chart-us" style="width:400px;height:400px;float:left;"></div>
+        <div id="chart-non-us" style="width:400px;height:400px;float:left;"></div>
+      <!-- </div> -->
     </div>
     <div class = "ratings-subcontainer-2">
        <div class = "ratings-sub-subcontainer-1">
@@ -50,90 +53,190 @@
       document.getElementById("loader2").style.display = "none";
     };
 
-d3.csv("data_cleaned_merged/movie_title_metadata.csv").then((movie_data) => {
+d3.csv("data_cleaned_merged/imdb.csv").then((movie_data) => {
+    let single_movie = movie_data[0];
+    let average_rating_data = [
+        {
+            value: single_movie["avg_vote"],
+            color: true,
+            text: "Average Rating",
+            votes: single_movie["votes"]
+        }
+    ]
+    let us_rating_data = [
+        {
+            value: single_movie["us_voters_rating"],
+            color: true,
+            text: "Average Rating",
+            votes: single_movie["us_voters_votes"]
+        }
+    ]
+    let non_us_rating_data = [
+        {
+            value: single_movie["non_us_voters_rating"],
+            color: true,
+            text: "Average Rating",
+            votes: single_movie["non_us_voters_votes"]
+        }
+    ]
+
     // GRAPH SET UP 
     // GRAPH: OVERALL RATINGS
     const height = 400;
-    const width = 500;
-    const margin = ({ top: 10, right: 10, bottom: 50, left: 60 });
+    const width = 400;
+    const margin = 20;
+    // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+    var radius = 150;
+    var innerRadius = radius - margin;  
+    var transitionsDuration = 1000;
+    var transitionsDelay = 250;
+    var percentageTextSize = '3.0rem';
     var color = d3.scaleOrdinal()
-    .domain(['m', 'f'])
-    .range(['#f5d6b0', '#619ba5'])
+    .domain([true, false])
+    .range(['#dd8c28', 'white'])
 
-    // 3. Create a SVG we will use to make our chart.
-    const svg = d3.create('svg')
-    .attr('width', width)
-    .attr('height', height);
+    var arc = d3.arc()
+        .innerRadius(radius - margin)
+        .outerRadius(radius);
+    
+    var pie = d3.pie()
+        .value(d=> d.value)
+        
+    var svg = d3.create('svg')
+        .attr('width', width)
+        .attr('height', height);
+    
+    // average rating
+    createBigCircle(svg);
+    var vis = createChartContainer(svg, average_rating_data);
+    drawChartArcs(vis, average_rating_data);
+    createSmallCircle(vis);
+    drawPercentageText(vis, average_rating_data);
 
-    // 4. Setting up scales.
-    const xScale = d3.scaleBand()
-    .domain([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-    .range([margin.left, width - margin.right])
-    .padding([0.2])
+    // us rating
+    var svg2 = d3.create('svg')
+        .attr('width', width)
+        .attr('height', height);
 
-    const yScale = d3.scaleLinear()
-    .domain([0, 40])
-    .range([height - margin.bottom, margin.top])
-    .nice();
+    createBigCircle(svg2);
+    var vis = createChartContainer(svg2, us_rating_data);
+    drawChartArcs(vis, us_rating_data);
+    createSmallCircle(vis);
+    drawPercentageText(vis, us_rating_data);
 
-    svg.append('g')
-    .attr('transform', "translate(" + margin.left + "," + margin.top + ")")
+    // non-us rating
+    var svg3 = d3.create('svg')
+        .attr('width', width)
+        .attr('height', height);
 
-    //6. Drawing our x-axis
-    svg.append('g')
-    .attr('transform', `translate(0, ${height - margin.bottom})`)
-    .call(d3.axisBottom(xScale).tickSize(0))
+    createBigCircle(svg3);
+    var vis = createChartContainer(svg3, non_us_rating_data);
+    drawChartArcs(vis, non_us_rating_data);
+    createSmallCircle(vis);
+    drawPercentageText(vis, non_us_rating_data);
 
-    // //7. Drawing our y-axis
-    svg.append('g')
-    .attr('transform', `translate(${margin.left}, 0)`)
-    .call(d3.axisLeft(yScale).tickFormat(d => d + "%"))
+    // Here we create the big circle (the outer one)
+    function createBigCircle(svg) {
+        svg.append('circle')
+        .attr('cx', radius)
+        .attr('cy', radius)
+        .attr('r', radius)
+        .attr('class', 'pie-graph-big-circle')
+        .attr("fill", "white");
+    }
 
-    //   svg.append("text")
-    //     .attr("transform",
-    //       "translate(" + (width / 2) + " ," +
-    //       (height + margin.top - 20) + ")")
-    //     .style("text-anchor", "middle")
-    //     .text("Position in Credits");
+    // Here we give dimensions to the svg and create a g container
+    function createChartContainer(svg, data) {
+        return svg
+        .data([data])
+        .attr('width', width)
+        .attr('height', height)
+        .append('g')
+        .attr('transform', 'translate(' + radius + ',' + radius + ')');
+    }
 
-    svg.append("g")
-    .selectAll("g")
-    .data(data_line)
-    .enter()
-    .append("g")
-    .attr("transform", function (d) { return "translate(" + xScale(d.position) + ",0)"; })
-    .selectAll("rect")
-    .data(function (d) {
-        a = [{ key: 'm', value: d.male_lines_avg }, { key: 'f', value: d.female_lines_avg }]
-        return a
-    })
-    .enter().append("rect")
-    .attr("x", function (d) { return xSubgroup(d.key); })
-    .attr("y", function (d) { return yScale(d.value); })
-    .attr("width", xSubgroup.bandwidth())
-    .attr("height", function (d) { return height - margin.bottom - yScale(d.value); })
-    .attr("fill", function (d) { return color(d.key); })
-    .on("mouseover", function (event, d) {
-        tooltip.transition()
-        .duration(200)
-        .style("opacity", .9)
-        tooltip.html(function () {
-        if (d.key === 'm') {
-            return "Male lines: " + parseInt(d.value) + "%"
-        } else {
-            return "Female lines: " + parseInt(d.value) + "%"
-        }
+    // We draw the arc in here, give it an smooth transition and the correct color depending on the data.
+    function drawChartArcs(visualization, data) {
+        var arcs = visualization.selectAll('g')
+        .data(pie)
+        .enter()
+        .append('g');
+
+        arcs.append('path')
+        .attr('fill', function(d, i) {
+            return color(data[i].color);
         })
-        .style("left", (event.pageX) + "px")
-        .style("top", (event.pageY - 28) + "px");
-    })
-    .on("mouseout", function (event, d) {
-        tooltip.transition()
-        .duration(500)
-        .style("opacity", 0);
-    })
+        .each(function(d) {
+            d.endAngle = 0;
+        })
+        .attr('d', arc)
+        .transition()
+        .duration(transitionsDuration)
+        .delay(transitionsDelay)
+        .call(arcTween, this);
+    }
+    // This help us achieve the arcs transitions.
+    function arcTween(transition) {
 
+        transition.attrTween("d", function(d) {
+
+        var interpolate = d3.interpolate(0, 360 * (d.value / 10) * Math.PI / 180);
+
+        return function(t) {
+
+            d.endAngle = interpolate(t);
+
+            return arc(d);
+        };
+        });
+    }
+
+    // This is the small circle, the one with the text in the middle.
+    function createSmallCircle(visualization) {
+        visualization.append('circle')
+        .attr('cx', 0)
+        .attr('cy', 0)
+        .attr('r', innerRadius)
+        .attr('class', 'pie-graph-small-circle')
+        .attr("fill", "white");
+    }
+
+    // This is the percentage text, it appears with the same transition as the path/arcs
+    function drawPercentageText(visualization, data) {
+        visualization.selectAll("image")
+            .data([0])
+            .enter()
+            .append("svg:image")
+            .attr("width", 0)
+            .attr("height", 0)
+            .attr("xlink:href", "images/star.png")
+            .attr('text-anchor', 'middle')
+            .attr("x", '-30px')
+            .attr("y", '-80px')
+            .transition()
+            .attr("width", 50)
+            .attr("height", 50)
+            .duration(transitionsDuration)
+            .delay(transitionsDelay)
+
+        visualization.append('text')
+        .data(data)
+        .attr("font-family", "Avenir Next")
+        .attr("font-size", "0px")
+        .attr("fill", "black")
+        .attr('text-anchor', 'middle')
+        .attr('y', '30px')
+        .text(function(d) {
+            return d.value + "/10";
+        })
+        .transition()
+        .attr('font-size', percentageTextSize)
+        .duration(transitionsDuration)
+        .delay(transitionsDelay)
+    }
     document.getElementById("chart").appendChild(svg.node());
+    document.getElementById("chart-us").appendChild(svg2.node());
+    document.getElementById("chart-non-us").appendChild(svg3.node());
     doneLoading();
 
     function updatePosition() {}
