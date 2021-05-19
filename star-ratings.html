@@ -78,7 +78,7 @@
             <div id = "all-ages-male" style="display:flex; flex-direction: row;"></div>
             <div id = "all-ages-female" style="display:flex; flex-direction: row;"></div>
         </div>
-        <p id="compare-rating" style="width: 250"></p>
+        <p id="compare-rating" style="width: 280"></p>
     </div>
     </div>
 
@@ -99,18 +99,19 @@
         margin: 5px;
         font-size: 1.25em;
     }
+
     .submit{
-        background-color: white;
-        border: 2px solid gray;
-        cursor: pointer;
-        border-radius: 4px;
-        font: 15px Avenir Next;
-        margin-left: 20;
-        margin-right:5;
-        height: 40px;
-        width: 100px;
-    }
-    .submit:hover{
+  background-color: white;
+  border: 2px solid gray;
+  cursor: pointer;
+  border-radius: 4px;
+  font: 15px Avenir Next;
+  margin-left: 20;
+  margin-right:5;
+  height: 40px;
+  width: 100px;
+}
+.submit:hover{
   background-color:  rgb(189, 188, 188);
 }
 
@@ -238,41 +239,41 @@ d3.csv("data_cleaned_merged/imdb.csv").then((movie_data) => {
 
         //all ages
         document.getElementById("all-ages-title").innerHTML = "All Ages"
-        createRating("all-ages-both", single_movie["avg_vote"], "both")? same.push("all voters"): false
-        createRating("all-ages-male",single_movie["males_allages_avg_vote"], "male")? same.push("all male voters"): false
-        createRating("all-ages-female",single_movie["females_allages_avg_vote"], "female")? same.push("all female voters"): false
+        createRating("all-ages-both", single_movie["avg_vote"], "both")? same.push("- Everyone"): false
+        createRating("all-ages-male",single_movie["males_allages_avg_vote"], "male")? same.push("- All males"): false
+        createRating("all-ages-female",single_movie["females_allages_avg_vote"], "female")? same.push("- All females"): false
 
         //under 18
         document.getElementById("under-18-title").innerHTML = "< 18"
-        createRating("under-18-both", single_movie["allgenders_0age_avg_vote"], "both")? same.push("all voters under the age of 18"): false
-        createRating("under-18-male",single_movie["males_0age_avg_vote"], "male")? same.push("all male voters under the age of  18"): false
-        createRating("under-18-female",single_movie["females_0age_avg_vote"], "female")? same.push("all female voters under the age 18"): false
+        createRating("under-18-both", single_movie["allgenders_0age_avg_vote"], "both")? same.push("- Everyone ages of 18 and under"): false
+        createRating("under-18-male",single_movie["males_0age_avg_vote"], "male")? same.push("- All males ages of 18 and under"): false
+        createRating("under-18-female",single_movie["females_0age_avg_vote"], "female")? same.push("- All females ages of 18 and under"): false
 
         //18-29
         document.getElementById("18-to-29-title").innerHTML = "18-29"
-        createRating("18-to-29-both", single_movie["allgenders_18age_avg_vote"], "both")? same.push("all voters between the age of 18-29"): false
-        createRating("18-to-29-male",single_movie["males_18age_avg_vote"], "male")? same.push("all male voters between the age of 18-29"): false
-        createRating("18-to-29-female",single_movie["females_18age_avg_vote"], "female")? same.push("all female voters between the age of 18-29"): false
+        createRating("18-to-29-both", single_movie["allgenders_18age_avg_vote"], "both")? same.push("- Everyone ages between 18 and 29"): false
+        createRating("18-to-29-male",single_movie["males_18age_avg_vote"], "male")? same.push("- All males ages between 18 and 29"): false
+        createRating("18-to-29-female",single_movie["females_18age_avg_vote"], "female")? same.push("- All females ages between 18 and 29"): false
 
         //30-45
         document.getElementById("30-to-44-title").innerHTML = "30-44"
-        createRating("30-to-44-both", single_movie["allgenders_30age_avg_vote"], "both")? same.push("all voters between the age of 30-44"): false
-        createRating("30-to-44-male",single_movie["males_45age_avg_vote"], "male")? same.push("all male voters between the age of 30-44"): false
-        createRating("30-to-44-female",single_movie["females_45age_avg_vote"], "female")? same.push("all female voters between the age of 30-44"): false
+        createRating("30-to-44-both", single_movie["allgenders_30age_avg_vote"], "both")? same.push("- Everyone ages between 30 and 44"): false
+        createRating("30-to-44-male",single_movie["males_45age_avg_vote"], "male")? same.push("- All males ages between 30 and 44"): false
+        createRating("30-to-44-female",single_movie["females_45age_avg_vote"], "female")? same.push("- All females ages between 30 and 44"): false
 
         //over 45
         document.getElementById("over-45-title").innerHTML = "> 45"
-        createRating("over-45-both", single_movie["allgenders_30age_avg_vote"], "both")? same.push("all voters over the age of 45"): false
-        createRating("over-45-male",single_movie["males_30age_avg_vote"], "male")? same.push("all male voters over the age of 45"): false
-        createRating("over-45-female",single_movie["females_30age_avg_vote"], "female")? same.push("all female voters over the age of 45"): false
+        createRating("over-45-both", single_movie["allgenders_30age_avg_vote"], "both")? same.push("- Everyone ages of 45 and over"): false
+        createRating("over-45-male",single_movie["males_30age_avg_vote"], "male")? same.push("- All males ages of 45 and over"): false
+        createRating("over-45-female",single_movie["females_30age_avg_vote"], "female")? same.push("- All females ages of 45 and over"): false
 
         let text_same = "Your rating is similar to "
         if(same.length === 0){
             text_same+= "no one"
         }else{
-            text_same+= "the average rating of "
+            text_same+= "the average rating of: <br> "
             for(let i = 0; i < same.length-1; i++){
-                text_same+=same[i]+" and  "
+                text_same+=same[i]+"<br>"
             }
             text_same+= same[same.length-1]
         }

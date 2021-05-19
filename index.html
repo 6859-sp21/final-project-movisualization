@@ -20,7 +20,7 @@
         <h2> Learn more about a movie by clicking a circle in the graph above or by searching below!</h2>
         <div class="autocomplete" >
           <input id="myInput" type="text" name="movie" placeholder="MOVIE" style="width:300px; ">
-          <input id="submit" type="submit">
+          <input class="submit" id="submit" type="submit" style="height:45px; margin-left:5;">
           <p id="movie-search" style="margin-left: 20;height: 10;"></p>
         </div>
        
@@ -33,7 +33,7 @@
     <iframe id="credits-graph" src="positions-graph.html" height="1200" width="1800"style="border:none;" ></iframe>
     <div id = "movie-graph" style= "display:flex; flex-direction: column;">
       <iframe src="conversation-graph.html" height="550" width="1800"style="border:none;" ></iframe>
-      <p id="redirect-ratings" style="font-size: 17px;font-weight: 500;text-decoration: underline;cursor:pointer"></p>
+      <button id="redirect-ratings"></button>
     </div>
     <div id = "rating-graph">
       <iframe id="rating-tab.html" src="rating-tab.html" height="1500" width="1500"style="border:none;" ></iframe>
@@ -42,12 +42,23 @@
     <p style="font-weight: 300;">
       Our dataset consists of 617 popularized movies which involves 9,035 characters with 220,579 conversational exchanges between 10,292 pairs of movie characters.
     </p>
-    Source: <a href="https://www.kaggle.com/Cornell-University/movie-dialog-corpus?select=movie_titles_metadata.tsv"> Movie Dialog Corpus</a>
+    Source: <a href="https://www.kaggle.com/Cornell-University/movie-dialog-corpus?select=movie_titles_metadata.tsv"> Movie Dialog Corpus</a>, <a href="https://www.kaggle.com/stefanoleone992/imdb-extensive-dataset?select=IMDb+ratings.csv"> IMDb movies extensive dataset </a>
   </div>
 </div>
  
 <style>
-
+#redirect-ratings{
+  font-family: Avenir Next;
+  font-size: 17px;
+  font-weight: 400;
+  cursor:pointer;
+  width: 400;
+  background-color: white;
+  border-radius: 7px;
+}
+#redirect-ratings:hover{
+  background-color: rgb(230, 230, 230);
+}
 h1{
   text-align:center;
   font-weight: normal;
@@ -72,11 +83,6 @@ input {
 input[type=text] {
   background-color: #f1f1f1;
   width: 100%;
-  font-family: 'Avenir Next';
-}
-input[type=submit] {
-  background-color: #fcf5ef;
-  color:black;
   font-family: 'Avenir Next';
 }
 .autocomplete-items {
@@ -505,7 +511,7 @@ let m = sessionStorage["movie"];
  if (no_exist.includes(m)){
   document.getElementById("redirect-ratings").innerHTML = "";
  } else{
-  document.getElementById("redirect-ratings").innerHTML = "Click here to learn about the ratings of this movie!";
+  document.getElementById("redirect-ratings").innerHTML = "Learn about the ratings of this movie >";
  }
 }
 
