@@ -86,17 +86,28 @@ window.addEventListener('storage', function(e) {
     }
   });  
 function showMovie(){
-    document.getElementById("movie-title").style.display = "flex"
-    document.getElementById('ratings.html').src = document.getElementById('ratings.html').src
-    document.getElementById("ratings.html-div").style.display = "flex"
+        document.getElementById("movie-title").style.display = "flex"
+        document.getElementById('ratings.html').src = document.getElementById('ratings.html').src
+        setTimeout(function(){
+            document.getElementById("ratings.html-div").style.display = "flex"
+        },500)
+
+        
+        
     setTimeout(function(){
-        document.getElementById("ratings-breakdown.html-div").style.display = "flex"
         document.getElementById('ratings-breakdown.html').src = document.getElementById('ratings-breakdown.html').src
-    }, 2000);
-    setTimeout(function(){
-        document.getElementById("star-ratings.html-div").style.display = "flex";
+        setTimeout(function(){
+            document.getElementById("ratings-breakdown.html-div").style.display = "flex"
+        },500)
+        setTimeout(function(){
+            setTimeout(function(){
+            document.getElementById("star-ratings.html-div").style.display = "flex"
+        },500)
         document.getElementById('star-ratings.html').src = document.getElementById('star-ratings.html').src
     }, 2000);
+    }, 2000);
+   
+
    
 //     document.getElementById("show-ratings").style.display = "flex"
 //    document.getElementById("show-ratings").style.flexDirection = "column"
