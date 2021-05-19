@@ -38,12 +38,10 @@
             count[parseInt(d.Position_in_Credits)-1].female_sum += parseFloat(d.Character_Line_Percent)
           }
         })
-        console.log(count);
         for(let i = 0; i < 10; i++){
           data[i].male_lines_avg = (count[i].male_sum/count[i].male_count)*100
           data[i].female_lines_avg = (count[i].female_sum/count[i].female_count)*100
         }
-        console.log(data)
         //data=[{position: 1,male_lines: 50,female_lines:80}, {position: 2, male_lines: 20,female_lines:70}]
         // 2. Setting up variables that describe our chart's space.
         const height = 400;

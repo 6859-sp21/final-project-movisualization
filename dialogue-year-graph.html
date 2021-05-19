@@ -143,14 +143,11 @@
         for(let i = 0; i < data_f.length;i++){
           data_diff.push({year: data_f[i].year, value: (data_f[i].value - data_m[i].value)})
         }
-        console.log(data_diff)
         const data_male = data_m
         const data_female = data_f
         const data_difference = data_diff
         function update_year(year){
           numPoints = ((year-1935)/5)+1
-          console.log(numPoints)
-          console.log(data_difference.slice(0, numPoints))
           // return [data_male.slice(0, numPoints), data_female.slice(0, numPoints)]
           return data_difference.slice(0, numPoints)
         }
@@ -229,7 +226,6 @@
           // console.log(data_m)
           // console.log(data_f)
            // create line for male 
-        console.log(data_d)
         svg.selectAll("circle").remove()
         svg.selectAll("path").remove()
         svg.selectAll("g").remove()
