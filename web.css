@@ -83,7 +83,8 @@ div.tabs{
 }
 .bigtab:hover {
   background-color: #ffe7d2;
-  border-bottom: 3px inset black;
+  border-bottom: 4px inset black;
+  font-weight: 500;
   outline: none;
 }
 .bigtab.active{
