@@ -40,7 +40,7 @@
 
       <div class="loader" id="loader1" style="margin-top: 120;"></div>
 
-      <div id="chart2" style="width:420px;height:420px;"></div>
+      <div id="chart2" style="width:420px;height:420px; display:flex"></div>
       </div>
       <div class = "credit-graph-subcontainer-2">
       <h2>Average lines by gender for each credit's position</h2>
@@ -268,10 +268,10 @@
             .append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
-
+ 
           // Setting up variables that describe our chart's space.
           const heightPos = 400;
-          const widthPos = 500;;
+          const widthPos = 500;
           const marginPos = ({ top: 50, right: 10, bottom: 20, left: 40 });
           const colorPos = d3.scaleOrdinal()
             .domain(['m', 'f'])
