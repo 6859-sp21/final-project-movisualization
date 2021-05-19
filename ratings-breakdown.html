@@ -68,7 +68,12 @@
     var x = d3.scaleLinear()
         .domain([0, d3.max(data, d => d.percent)])
         .range([margin.left, width - margin.right])
-
+    //x-axis
+        svg.append("text")             
+            .attr("y", 15)
+            .attr("x", width/2 )
+            .style("text-anchor", "middle")
+            .text("Percentage breakdown of users ratings");
     // //7. Drawing our y-axis
     var yAxis = svg.append('g')
         .attr("transform", `translate(${margin.left},0)`)
@@ -78,11 +83,12 @@
         
 
     svg.append("text")
+        .attr("transform", "rotate(-90)")
         .attr("y", 5)
-        .attr("x",10)
+        .attr("x", 0 - (height / 2))
         .attr("dy", "1em")
         .attr("font-size", 15)
-        .style("text-anchor", "right")
+        .style("text-anchor", "middle")
         .text("Rating");   
     
     svg.append("g")
