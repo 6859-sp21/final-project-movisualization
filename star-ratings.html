@@ -38,7 +38,7 @@
         <!-- <input type="button"> Submit </button> -->
     </fieldset>
     <p id="your-rating" style="margin-top: 10"> Your Rating: 0.0</p>
-    <button class="submit" id="submit"> Submit </button>
+    <button class="submit" id="submit-thing"> Submit </button>
 </div>
     <div class = "star-all" id="star-all">
         <div class = "star-all-subcontainer">
@@ -233,7 +233,7 @@ d3.csv("data_cleaned_merged/imdb.csv").then((movie_data) => {
     }
         
     
-    document.getElementById("submit").onclick =  function(){
+    document.getElementById("submit-thing").onclick =  function(){
         console.log(my_rating)
         let same = []
 

@@ -21,7 +21,7 @@
         <a style="display: block" href="https://www.productionhub.com/blog/post/the-anatomy-of-a-call-sheet-how-to-make-a-call-sheet-for-film-and-tv" target="_blank">Anatomy of a Call sheet</a>
         <a style="display: block" href="https://www.spotlight.com/news-and-advice/read-a-call-sheet/" target="_blank">How to Read a Call Sheet</a>            
       </div>
-      <div class="tabs" id="tabs" style="margin: auto; margin-top: 10px;">
+      <div class="tabs" id="tabs" style="margin: auto; margin-top: 10px; ">
         <button class="tablinks" id="adventure">Adventure</button>
         <button class="tablinks" id="action">Action</button>
         <button class="tablinks" id="drama">Drama</button>
@@ -272,7 +272,7 @@
           // Setting up variables that describe our chart's space.
           const heightPos = 400;
           const widthPos = 500;;
-          const marginPos = ({ top: 20, right: 10, bottom: 20, left: 30 });
+          const marginPos = ({ top: 50, right: 10, bottom: 20, left: 40 });
           const colorPos = d3.scaleOrdinal()
             .domain(['m', 'f'])
             .range(['#f5d6b0', '#619ba5'])
@@ -291,8 +291,9 @@
             .domain([1, 2, 3, 4, 5, 6, 7, 8])
             .range([marginPos.top, heightPos - marginPos.bottom])
             .padding([0.2]);
-
-          // bars 
+            
+           
+            // bars 
           var bar = svgPos.append('g')
             .selectAll("g")
             .data(dataPos)
@@ -337,7 +338,13 @@
                 return "50%";
               }
             }))
+            svgPos.append("text")
+            .attr("y", 25 )
+            .attr("x", 270 )
+            .style("text-anchor", "middle")
+            .text("Gender distribution");
 
+         
 
           // Drawing our y-axis
           yAxis = svgPos.append('g')
@@ -346,6 +353,13 @@
             .call(g => g.selectAll(".tick")
               .data(dataPos[0])
               .attr('transform', d => `translate(${xScalePos(-1.08)},${y(d.position) + y.bandwidth() / 2})`))
+
+              svgPos.append("text")
+              .attr("transform", "rotate(-90)")             
+            .attr("y", 15 )
+            .attr("x", -widthPos/2 +30 )
+            .style("text-anchor", "middle")
+            .text("Position");
 
           document.getElementById("chart2").appendChild(svgPos.node());
           
@@ -395,6 +409,13 @@
           svg.append('g')
             .attr('transform', `translate(${margin.left}, 0)`)
             .call(d3.axisLeft(yScale).tickFormat(d => d + "%"))
+          
+            svg.append("text")
+              .attr("transform", "rotate(-90)")             
+            .attr("y", 15 )
+            .attr("x", -widthPos/2 +30 )
+            .style("text-anchor", "middle")
+            .text("Average line distribution");
 
           svg.append("text")
             .attr("transform",
