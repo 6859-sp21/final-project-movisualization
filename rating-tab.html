@@ -4,7 +4,7 @@
     <p style="margin-left: 10; font-size: 20"> FIND A MOVIE'S RATING:</p>
     <div class="autocomplete" style="margin-left: 10;">
       <input id="myInput" type="text" name="movie" placeholder="MOVIE" style="width:300px;">
-      <input id="submit" type="submit">
+      <input class="submit" id="submit" type="submit" style="height:45px; margin-left:5;">
       <p id="movie-search" style="margin-left: 20;height: 10;"></p>
     </div>
     
@@ -43,12 +43,9 @@
           background-color: #f1f1f1;
           width: 100%;
           font-family: 'Avenir Next';
-        }
-        input[type=submit] {
-          background-color: #fcf5ef;
-          color:black;
-          font-family: 'Avenir Next';
-        }
+        } 
+        
+
         .autocomplete-items {
           position: absolute;
           border: 1px solid #d4d4d4;
