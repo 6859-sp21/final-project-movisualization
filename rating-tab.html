@@ -1,15 +1,15 @@
 <html>
     <script src="https://d3js.org/d3.v6.js"></script>
     <link rel="stylesheet" href="web.css">
-    <h2 style="margin-left: 10;"> Search a movie below!</h2>
+    <p style="margin-left: 10; font-size: 20"> FIND A MOVIE'S RATING:</p>
     <div class="autocomplete" style="margin-left: 10;">
-      <input id="myInput" type="text" name="movie" placeholder="Movie" style="width:300px; ">
+      <input id="myInput" type="text" name="movie" placeholder="MOVIE" style="width:300px;">
       <input id="submit" type="submit">
       <p id="movie-search" style="margin-left: 20;height: 10;"></p>
     </div>
     
     <div id="show-ratings" style="display:flex; flex-direction: column;">
-        <h1 id="movie-title" style="margin-left: 10;">Movie</h1>
+        <h1 id="movie-title" style="margin-left: 10; font-size: 50px;">Movie</h1>
         <div id="ratings.html-div" >
         <iframe id="ratings.html" src="ratings.html" height="500" width="1800"style="border:none; "></iframe>
         </div>
@@ -37,14 +37,17 @@
           background-color: #f1f1f1;
           padding: 10px;
           font-size: 16px;
+          font-family: 'Avenir Next';
         }
         input[type=text] {
           background-color: #f1f1f1;
           width: 100%;
+          font-family: 'Avenir Next';
         }
         input[type=submit] {
           background-color: #fcf5ef;
           color:black;
+          font-family: 'Avenir Next';
         }
         .autocomplete-items {
           position: absolute;
