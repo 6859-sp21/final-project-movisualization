@@ -26,7 +26,15 @@
 
   <script>
     d3.csv("data_cleaned_merged/imdb_with_metadata.csv").then((movie_data) => {
-    let single_movie = movie_data[0];
+    let wanted_movie =  sessionStorage["movie_rating"];
+    let single_movie = ""
+    for(let i = 0; i < movie_data.length; i++){
+        if(wanted_movie === movie_data[i]["title"]){
+            single_movie = movie_data[i]
+            break
+        }
+    }
+    if ( single_movie !== ""){
     let total_votes = parseInt(single_movie["total_votes"])
     let data = []
 
@@ -124,7 +132,7 @@
         .attr("dy", "0.35em")
         .attr("dx", +4)
 
-    document.getElementById("chart").appendChild(svg.node());
+    document.getElementById("chart").appendChild(svg.node());}
 });
 
   </script>

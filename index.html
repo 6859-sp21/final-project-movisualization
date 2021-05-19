@@ -13,8 +13,7 @@
       <button class="bigtab" id ="lines" onclick="showLines(this)">Lines</button>
       <button class="bigtab" id ="credits" onclick="showCredits()">Credits position</button>
       <button class="bigtab" id ="year" onclick="showYear()">Year</button>
-      <button class="bigtab" id ="rating">Rating</button>
-
+      <button class="bigtab" id="rating" onclick="showRating()">Rating</button>
     </div>
     <div id="line-graph" class = "line-graph-container">
       <iframe src="dialogue-graph.html" height="650" width="1800"style="border:none; " ></iframe>
@@ -32,8 +31,12 @@
       <iframe src="dialogue-year-graph.html" height="1000" width="1500"style="border:none;" ></iframe>
     </div>
     <iframe id="credits-graph" src="positions-graph.html" height="1200" width="1800"style="border:none;" ></iframe>
-    <div id = "movie-graph">
-      <iframe src="conversation-graph.html" height="800" width="1800"style="border:none;" ></iframe>
+    <div id = "movie-graph" style= "display:flex; flex-direction: column;">
+      <iframe src="conversation-graph.html" height="550" width="1800"style="border:none;" ></iframe>
+      <p id="redirect-ratings" style="font-size: 17px;font-weight: 500;text-decoration: underline;cursor:pointer"></p>
+    </div>
+    <div id = "rating-graph">
+      <iframe id="rating-tab.html" src="rating-tab.html" height="1000" width="1500"style="border:none;" ></iframe>
     </div>
   <div class = "foot-container">
     <p style="font-weight: 300;">
@@ -44,7 +47,7 @@
 </div>
  
 <style>
-   
+
 h1{
   text-align:center;
   font-weight: normal;
@@ -130,10 +133,18 @@ input[type=submit] {
   function showMovie(){
    
     document.getElementById("movie-graph").style.display = "flex";
+    clickForMovie();
     document.getElementById("movie-graph").scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
   } 
+  function showRating(){
+    hideAll();
+    window.scrollTo(0, 0);
+    document.getElementById("rating").classList.toggle("active");
+    document.getElementById("rating-graph").style.display = "flex"
+  }
   function hideAll(){
     document.getElementById("line-graph").style.display = "none"
+    document.getElementById("rating-graph").style.display = "none"
     document.getElementById("credits-graph").style.display = "none"
     document.getElementById("year-graph").style.display = "none"
     document.getElementById("movie-graph").style.display = "none"
@@ -450,7 +461,56 @@ document.getElementById("submit").onclick = function(){
   }
 
 }
+function clickForMovie(){
+let m = sessionStorage["movie"];
+  let no_exist = ['Ghostbusters',
+ 'Invaders From Mars',
+ 'L\xef\xbf\xbdOn',
+ 'Labor Of Love',
+ 'Mighty Morphin Power Rangers',
+ 'My Mother Dreams The Satans Disciples In New York',
+ 'Pirates Of The Caribbean',
+ 'Plastic Man',
+ 'Rko 281',
+ 'Simone',
+ 'Star Trek The Wrath Of Khan',
+ 'New Nightmare',
+ 'Alien Vs Predator',
+ 'Beetle Juice',
+ 'Body Of Evidence',
+ 'Crazy Love',
+ 'Crouching Tiger Hidden Dragon',
+ 'The Devil And Daniel Webster',
+ 'Star Wars The Empire Strikes Back',
+ 'Five Feet High And Rising',
+ 'Jason Lives Friday The 13Th Part Vi',
+ 'Hellraiser Hellseeker',
+ 'Last Of The Mohicans',
+ 'Manhunt',
+ 'Arcade',
+ 'Nan',
+ 'Neuromancer',
+ 'The Producers',
+ 'Quantum Project',
+ 'Red White Black  Blue',
+ 'Route 9',
+ 'Spare Me',
+ 'Stranglehold',
+ 'Uturn',
+ 'The Witching Hour',
+ 'Whos Your Daddy']
+ if (no_exist.includes(m)){
+  document.getElementById("redirect-ratings").innerHTML = "";
+ } else{
+  document.getElementById("redirect-ratings").innerHTML = "Click here to learn about the ratings of this movie!";
+ }
+}
 
+document.getElementById("redirect-ratings").onclick = function(){
+  sessionStorage['movie_rating'] = sessionStorage['movie']
+  showRating();
+
+}
  
 
 

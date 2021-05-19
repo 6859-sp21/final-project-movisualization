@@ -129,7 +129,14 @@
     }  
 
 d3.csv("data_cleaned_merged/imdb.csv").then((movie_data) => {
-    let single_movie = movie_data[0];
+    let wanted_movie =  sessionStorage["movie"];
+    let single_movie = ""
+    for(let i = 0; i < movie_data.length; i++){
+        if(wanted_movie === movie_data[i].title){
+            single_movie = movie_data[i]
+        }
+    }
+    if(single_movie!== ""){
     
      
     let average_rating_data = [
@@ -209,7 +216,7 @@ d3.csv("data_cleaned_merged/imdb.csv").then((movie_data) => {
             half_star.className = "fa fa-star-half";
             half_star.style.color = color
             if(!faded){
-                star.style.fontSize = "20px";
+                half_star.style.fontSize = "20px";
             }
             document.getElementById(container).append(half_star)
         }
@@ -270,7 +277,7 @@ d3.csv("data_cleaned_merged/imdb.csv").then((movie_data) => {
             text_same+= same[same.length-1]
         }
         document.getElementById("compare-rating").innerHTML = text_same;
-    }
+    }}
 });
 
   </script>

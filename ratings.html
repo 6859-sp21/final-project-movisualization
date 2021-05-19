@@ -12,41 +12,37 @@
       <h2>Overall Ratings</h2>
       <p style="width: 700px">Overall ratings from IMDB of movie.</p>
 
-      <!-- <div class="loader" id="loader1" style="margin-top: 120;"></div> -->
-      <!-- <div style="float: horizontal;"> -->
       <div class="ratings-subcontainer">
       
       <div class="general-rating-subcontainer">
-        <h3 >Average Rating</h3>
+        <h3 style="font-weight: 400; margin-left: 20;">Average Rating</h3>
         <div class="general-rating-container">
-        
-        <div id="chart" style="width:400px;height:400px; float:left;"></div>
-        <div class="general-rating-subcontainer" style="margin-left: -60px; margin-right: 100px;">
+        <div id="chart" style="width:300;height:200; float:left;"></div>
+        <div class="general-rating-subcontainer" style="margin-left: -60px; margin-right: 50px;">
           <p class="num" id="votes-general"></p>
           <p class="votes-title" ></p>
           <p class="num" id="median"></p>
           <p class="votes-title" id="median-title"> </p>
-
         </div>
       </div>
       </div>
       
       <div class="general-rating-subcontainer">
-        <h3>Average US Rating</h3>
+        <h3 style="font-weight: 400; margin-left: 20;"> Average US Rating</h3>
 
         <div class="general-rating-container">
-        <div id="chart-us" style="width:400px;height:400px;float:left;"></div>
-        <div class="general-rating-subcontainer" style="margin-left: -60px; margin-right: 100px;">
-        <p class="num" id="votes-us"><p>
+        <div id="chart-us" style="width:300;height:200;float:left;"></div>
+        <div class="general-rating-subcontainer" style="margin-left: -60px; margin-right: 50px;">
+        <p class="num" id="votes-us"></p>
         <p class="votes-title"></p>
         </div>
       </div>
     </div>
       <div class="general-rating-subcontainer">
-        <h3>Average Non US Rating</h3>
+        <h3 style="font-weight: 400; margin-left: 20;">Average Non US Rating</h3>
 
         <div class="general-rating-container">
-        <div id="chart-non-us" style="width:400px;height:400px;float:left;"></div>
+        <div id="chart-non-us" style="width:300;height:200;float:left;"></div>
         <div class="general-rating-subcontainer" style="margin-left: -60px; ">
         <p class="num" id="votes-non-us"></p>
         <p class="votes-title"></p>
@@ -59,22 +55,7 @@
 
 
     </div>
-    <!-- <div class = "ratings-subcontainer-2">
-       <div class = "ratings-sub-subcontainer-1">
-        <h2>Rating Breakdown</h2>
-        <p style="width: 700px">
-            Breakdown of rating of user votes per rating value.
-        </p>
-        <div class="loader" id="loader2" style="margin-top: 120;"></div>
-        <div id="chart2" style="width:420px;height:420px; float:left"></div>
-      </div>
-      <div class = "ratings-sub-subcontainer-2">
-        <h2>Compare your rating</h2>
-        <p style="width: 700px">Ratings by demographics compared to your rating</p>
-        <div id="chart3" style="width:420px;height:420px; float:left"></div>
-      </div>
-    </div> -->
-  <!-- </div> -->
+
   <style>
     @keyframes spin {
       0% {
@@ -90,11 +71,18 @@
   <script>
     function doneLoading() {
       document.getElementById("loader1").style.display = "none";
-      document.getElementById("loader2").style.display = "none";
     };
 
 d3.csv("data_cleaned_merged/imdb_with_metadata.csv").then((movie_data) => {
-    let single_movie = movie_data[0];
+  let wanted_movie =  sessionStorage["movie_rating"];
+    let single_movie = ""
+    for(let i = 0; i < movie_data.length; i++){
+        if(wanted_movie === movie_data[i]["title"]){
+            single_movie = movie_data[i]
+            break
+        }
+    }
+  if(single_movie !== ""){
     
      
     let average_rating_data = [
@@ -124,15 +112,15 @@ d3.csv("data_cleaned_merged/imdb_with_metadata.csv").then((movie_data) => {
 
     // GRAPH SET UP 
     // GRAPH: OVERALL RATINGS
-    const height = 400;
-    const width = 350;
+    const height = 200;
+    const width = 250;
     const margin = 20;
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-    var radius = 150;
+    var radius = 100;
     var innerRadius = radius - margin;  
     var transitionsDuration = 1000;
     var transitionsDelay = 250;
-    var percentageTextSize = '3.0rem';
+    var percentageTextSize = '2rem';
     var color = d3.scaleOrdinal()
     .domain([true, false])
     .range(['#dddbd0', 'white'])
@@ -253,11 +241,11 @@ d3.csv("data_cleaned_merged/imdb_with_metadata.csv").then((movie_data) => {
             .attr("height", 0)
             .attr("xlink:href", "images/star.png")
             .attr('text-anchor', 'middle')
-            .attr("x", '-30px')
-            .attr("y", '-80px')
+            .attr("x", '-20px')
+            .attr("y", '-50px')
             .transition()
-            .attr("width", 50)
-            .attr("height", 50)
+            .attr("width", 30)
+            .attr("height", 30)
             .duration(transitionsDuration)
             .delay(transitionsDelay)
 
@@ -288,6 +276,7 @@ d3.csv("data_cleaned_merged/imdb_with_metadata.csv").then((movie_data) => {
       el.innerHTML = "Votes";
     })
     document.getElementById("median-title").innerHTML = "Median"
+  }
 });
 
   </script>

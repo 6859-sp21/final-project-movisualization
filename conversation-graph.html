@@ -12,7 +12,7 @@
     <div class="movie-container" style="display:flex; flex-direction: row;">
       
       <div class="movie-graph-subcontainer-info">
-        <div id='rating' style='width:400px;height:400px;float:left;'></div>
+        <!-- <div id='rating' style='width:400px;height:400px;float:left;'></div> -->
       </div>
 
       <div class="movie-graph-subcontainer-pie" style="display:flex; flex-direction: column;">
@@ -54,9 +54,6 @@
       
     </div>
 
-
-    <style>
-    </style>
 
     <script>
       
@@ -136,7 +133,7 @@
 
           const svg = d3.create('svg')
               .attr('width', width)
-              .attr('height', height*2);
+              .attr('height', 350);
 
           const xScale = d3.scaleBand()
             .domain(d3.range(0, data_by_movie.length))
@@ -251,8 +248,9 @@
           ///////////////////
           ///////////////////
 
-          rating_data = [{count:movie_info[0].Rating, color:'#404040' },
-                          {count:10.0-movie_info[0].Rating, color:'#D8D8D8'}]
+          
+          // rating_data = [{count:movie_info[0].Rating, color:'#404040' },
+          //                 {count:10.0-movie_info[0].Rating, color:'#D8D8D8'}]
 
           var height_r = 300;
           var width_r = 300;
@@ -269,39 +267,39 @@
 						.innerRadius(innerRadius)
 						.outerRadius(outerRadius);
 
-          const svg_rating = d3.select('#rating')
-                .append('svg')
-                .attr('width', width_r)
-                .attr('height', height_r)
-                .append('g')
-                .attr("transform", "translate(" + width_r / 2 + "," + height_r / 2 + ")");;
+          // const svg_rating = d3.select('#rating')
+          //       .append('svg')
+          //       .attr('width', width_r)
+          //       .attr('height', height_r)
+          //       .append('g')
+          //       .attr("transform", "translate(" + width_r / 2 + "," + height_r / 2 + ")");;
             
             
                      
-          svg_rating.selectAll('g')
-            .data(pie(rating_data))
-            // .join("g")
-            .enter()
-            .append('path')
-            .attr('d', arc)
-            .attr('fill', function(d){return(d.data.color)})
-            // .attr('stroke', 'black')
-            .style('stroke-width', '1px')
-            .style('opacity', 0.7)
+          // svg_rating.selectAll('g')
+          //   .data(pie(rating_data))
+          //   // .join("g")
+          //   .enter()
+          //   .append('path')
+          //   .attr('d', arc)
+          //   .attr('fill', function(d){return(d.data.color)})
+          //   // .attr('stroke', 'black')
+          //   .style('stroke-width', '1px')
+          //   .style('opacity', 0.7)
 
-            svg_rating.append("text")
-              .attr("dy", ".50em")
-              .attr('font-size', '1.2em')
-              .attr('y', -outerRadius-25)
-              .style("text-anchor", "middle")
-              .text('Rating');
+          //   svg_rating.append("text")
+          //     .attr("dy", ".50em")
+          //     .attr('font-size', '1.2em')
+          //     .attr('y', -outerRadius-25)
+          //     .style("text-anchor", "middle")
+          //     .text('Rating');
 
-            svg_rating.append("text")
-              .attr("dy", ".50em")
-              .attr('font-size', '2em')
-              .attr('y', 0)
-              .style("text-anchor", "middle")
-              .text(movie_info[0].Rating);        
+          //   svg_rating.append("text")
+          //     .attr("dy", ".50em")
+          //     .attr('font-size', '2em')
+          //     .attr('y', 0)
+          //     .style("text-anchor", "middle")
+          //     .text(movie_info[0].Rating);        
 
           /////////////////////////////////
           /////////////////////////////////
