@@ -75,22 +75,22 @@ div.tabs{
   padding:20px;
   font-size : 18px;
   width: 25%;
-  border: 2px solid gray;
-  background-color: rgb(231, 231, 231);
-  font-family: Avenir Next;
-
+  background-color: #fcf5ef;
+  font-family: "Avenir Next";
   cursor: pointer;
-  border-radius: 4px;
+  border: none;
+  border-bottom: 1px solid black;
 }
 .bigtab:hover {
-  background-color: rgb(189, 188, 188);
+  background-color: #ffe7d2;
+  border-bottom: 4px inset black;
+  font-weight: 500;
   outline: none;
 }
 .bigtab.active{
-  background-color: white;
-  border-bottom: none;
+  font-weight: 500;
+  border-bottom: 4px inset black;
 }
-
 
 span.dot{
   font-weight: 400;

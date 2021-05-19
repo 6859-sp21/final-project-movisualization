@@ -64,16 +64,17 @@
         allData.forEach(function(d){
             d.Movie = d.Title
             d.id = +d.MovieID.substring(1)
-            d.Year = +d.Year
+            d.Year = +(d.Year.substring(0,4))
             d.Conversation = +d.Conv_ID.substring(1)
             d.F_Percent = +d.Percent_Female*100
             d.M_Percent = +d.Percent_Male*-100;
         })
+        
         movieMetadata.forEach(function(d){
           d.Movie = d.title
           d.id = +d.movie_id.substring(1)
           d.Genres = d.genres
-          d.Year = +d.year
+          d.Year = +(d.year.substring(0,4))
           d.Rating = +d.rating
           d.Votes = +d.votes;
         })
@@ -114,6 +115,7 @@
           for (i=0; i<data_by_movie.length; i++){
             data_by_movie[i].position = i
           }
+          console.log(movie_info[0])
           // Movie + Year info
           document.getElementById("movie").innerHTML = sessionStorage["movie"] + ' (' + movie_info[0].Year + ')'
           // document.getElementById("year").innerHTML = 'Year: ' + movie_info[0].Year
@@ -327,7 +329,6 @@
           pie_data = [{'count':moviePie[0].ff_percent, 'color':'#619ba5', 'key':'ff'},
                       {'count':moviePie[0].mf_percent, 'color':'#DDDBD0', 'key':'mf'},
                       {'count':moviePie[0].mm_percent, 'color':'#f5d6b0', 'key':'mm'}]
-          console.log(pie_data)
 
 
           var pie = d3.pie()
