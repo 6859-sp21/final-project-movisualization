@@ -80,8 +80,11 @@
         })
 
         window.addEventListener('storage', function(e) {  
-          
-          update();
+          if(e.key == "movie"){
+            update();
+
+      }
+
         });   
 
 

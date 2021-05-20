@@ -798,6 +798,7 @@ var movies = ['10 Things I Hate About You',
 
  autocomplete(document.getElementById("myInput"), movies);
 document.getElementById("submit").onclick = function(){
+
   var m = (document.getElementById("myInput").value)
   if (!movies.includes(m)){
     document.getElementById("movie-search").innerHTML = "Oh no this movie does not exist!"

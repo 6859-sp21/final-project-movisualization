@@ -15,7 +15,9 @@ body {
     font-weight: 100;
 }
 /* General */
-
+iframe{
+  z-index:9999;
+}
 /*tooltip*/
 div.tooltip {
   color: black;
