@@ -1,6 +1,10 @@
 # Reading Between the Lines
 
+![alt text](https://github.com/6859-sp21/final-project-movisualization/blob/main/background.jpg?raw=true)
+
+
 This project visualizes gender discrepancies in the film industry. Itincludes user-interactive and dynamic, animated visualizations of600+ IMDb movies. Metadata-rich IMDb movie conversations andratings datasets found on kaggle contribute to analyses of female vs.  male dominance in movie scripts and leading roles.  Readingbetween the lines of the scripts allows for both breadth and depth inunderstanding the dynamics of gender in Hollywood.
+
 
 ### Our Team
 - Rachael Fuchs (rfuchs)
