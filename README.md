@@ -1,11 +1,17 @@
 # Reading Between the Lines
 
-Using data on movie conversations, we take a look into how gender plays a role in movies.
+This project visualizes gender discrepancies in the film industry. Itincludes user-interactive and dynamic, animated visualizations of600+ IMDb movies. Metadata-rich IMDb movie conversations andratings datasets found on kaggle contribute to analyses of female vs.  male dominance in movie scripts and leading roles.  Readingbetween the lines of the scripts allows for both breadth and depth inunderstanding the dynamics of gender in Hollywood.
 
 ### Our Team
 - Rachael Fuchs (rfuchs)
 - Alizée Schoen (amschoen)
 - Claire Yin (yinc)
+
+### Page link
+https://6859-sp21.github.io/final-project-movisualization/
+
+### Video
+https://drive.google.com/file/d/1No-gb-QkLQry5Llw0wKojIxfib60sHu-/view?usp=sharing
 
 ### Research/development process
 First we all brainstormed ideas and looked for datasets seperatly, and decided on our final proposal together. Once we had an idea on what to do we seperated tasks, and set milestones together. A breif overview of how we split the main tasks is described below. After we had our main tasks done, we each helped eachother debug, refine and add on the graphs. 
