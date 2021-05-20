@@ -13,6 +13,9 @@ https://6859-sp21.github.io/final-project-movisualization/
 ### Video
 https://drive.google.com/file/d/1No-gb-QkLQry5Llw0wKojIxfib60sHu-/view?usp=sharing
 
+### Paper 
+https://github.com/6859-sp21/final-project-movisualization/blob/main/final/Movisualization.pdf
+
 ### Research/development process
 First we all brainstormed ideas and looked for datasets seperatly, and decided on our final proposal together. Once we had an idea on what to do we seperated tasks, and set milestones together. A breif overview of how we split the main tasks is described below. After we had our main tasks done, we each helped eachother debug, refine and add on the graphs. 
 
